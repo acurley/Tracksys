@@ -69,4 +69,8 @@ Tracksys::Application.configure do
 
   # Set the number of threads dedicated to JP2K creation.
   NUM_JP2K_THREADS = 2
+
+	# Finalization Variables
+  PRODUCTION_MOUNT="/digiserv-production"
+  MIGRATION_MOUNT = "/digiserv-migration"
 end

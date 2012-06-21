@@ -39,7 +39,8 @@ Tracksys::Application.configure do
 #  Fedora_apia_wsdl = 'http://tracksysdev.lib.virginia.edu:8080/fedora/wsdl?api=API-A'
 #  Fedora_username = 'fedoraAdmin'
 #  Fedora_password = 'fedoraAdmin'
- FEDORA_REST_URL = 'http://localhost:8080/fedora'
+# FEDORA_REST_URL = 'http://localhost:8080/fedora'
+ FEDORA_REST_URL = 'http://fedora-prod02.lib.virginia.edu:8080/fedora'
  SOLR_URL = "http://localhost:8983/solr/staging_solr"
  Fedora_username = 'fedoraAdmin'
  Fedora_password = 'fedoraAdmin'
