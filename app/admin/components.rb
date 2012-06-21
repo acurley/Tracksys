@@ -187,7 +187,7 @@ ActiveAdmin.register Component do
         link_to "#{component.master_files.size}", admin_master_files_path(:q => {:component_id_eq => component.id})
       end
       row :parent_component do |component|
-        if component.parent_component_id > 0
+        if component.parent
           link_to "#{component.parent.name}", admin_component_path(component.parent_component_id)
         end
       end
