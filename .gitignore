@@ -11,3 +11,4 @@ tracksys.sublime-workspace
 
 config/database.yml
 lib/xslt
+Gemfile.lock
