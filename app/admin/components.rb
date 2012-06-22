@@ -10,6 +10,7 @@ ActiveAdmin.register Component do
   filter :title
   filter :content_desc
   filter :pid
+  filter :master_files_count
   filter :availability_policy
   filter :indexing_scenario
 
@@ -29,7 +30,7 @@ ActiveAdmin.register Component do
         "No exemplar set."
       end
     end
-    column :master_files do |component|
+    column "Master Files", :sortable => :master_files_count do |component|
       link_to "#{component.master_files.size}", admin_master_files_path(:q => {:component_id_eq => component.id})
     end
     column("Links") do |component|
@@ -187,7 +188,7 @@ ActiveAdmin.register Component do
         link_to "#{component.master_files.size}", admin_master_files_path(:q => {:component_id_eq => component.id})
       end
       row :parent_component do |component|
-        if component.parent_component_id > 0
+        if component.parent
           link_to "#{component.parent.name}", admin_component_path(component.parent_component_id)
         end
       end

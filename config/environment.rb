@@ -2,8 +2,11 @@
 require File.expand_path('../application', __FILE__)
 
 # Finalization Variables
-PRODUCTION_MOUNT = "/digiserv-production"
-MIGRATION_MOUNT = "/digiserv-migration"
+PRODUCTION_MOUNT = "/usr/local/digiserv-production"
+MIGRATION_MOUNT = "/usr/local/digiserv-migration"
+
+ADMINISTRATIVE_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/administrative"
+IVIEW_CATALOG_EXPORT_DIR = "#{ADMINISTRATIVE_DIR_PRODUCTION}/EAD2iViewXML"
 
 FINALIZATION_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/finalization" 
 FINALIZATION_DIR_MIGRATION = "#{MIGRATION_MOUNT}/finalization" 
@@ -43,8 +46,8 @@ SOLR_PRODUCTION_PORT = "8984"
 
 # To prevent writing to production archive on Stornext from all but tracksys.production
 # the default write directory will be Test.
-ARCHIVE_WRITE_DIR = "/RMDS_archive/CheckSummed_archive"
-ARCHIVE_READ_DIR = "/RMDS_archive/CheckSummed_archive"
+ARCHIVE_WRITE_DIR = "/usr/local/RMDS_archive/CheckSummed_archive"
+ARCHIVE_READ_DIR = "/usr/local/RMDS_archive/CheckSummed_archive"
 TEI_ARCHIVE_DIR = "#{ARCHIVE_READ_DIR}/tracksys_tei_xml_depository"
 XTF_DELIVERY_DIR = "/xtf_delivery/text"
 
@@ -57,7 +60,7 @@ VIRGO_URL = "http://search.lib.virginia.edu/catalog"
 # Library homepage URL for request form footer
 LIBRARY_URL = "http://preview.lib.virginia.edu"
 
-IVIEW_CATALOG_EXPORT_DIR = "/digiserv-production/administrative/EAD2iViewXML"
+IVIEW_CATALOG_EXPORT_DIR = "/usr/local/digiserv-production/administrative/EAD2iViewXML"
 
 Fedora_namespaces = {
   'xsi'=>'http://www.w3.org/2001/XMLSchema-instance',

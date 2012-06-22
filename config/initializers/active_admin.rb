@@ -53,7 +53,7 @@ ActiveAdmin.setup do |config|
   #
   # This setting changes the method which Active Admin calls
   # within the controller.
-  # config.authentication_method = :authenticate_admin_user!
+  config.authentication_method = :authenticate_admin_user!
 
 
   # == Current User
@@ -63,17 +63,7 @@ ActiveAdmin.setup do |config|
   #
   # This setting changes the method which Active Admin calls
   # to return the currently logged in user.
-  # config.current_user_method = :current_admin_user
-
-  # Turn off Devise authentication for production test and check NetBadge Users against StaffMembers database.
-  if Rails.env == "production"
-    config.authentication_method = false
-    config.current_user_method   = false
-    config.before_filter :authorize, :except => [ :access_denied, :mods_identifiers ]
-  else
-    config.authentication_method = :authenticate_admin_user!
-    config.current_user_method = :current_admin_user
-  end
+  config.current_user_method = :current_admin_user
 
 
   # == Logging Out
