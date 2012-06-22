@@ -54,7 +54,7 @@ Tracksys::Application.configure do
 #  NUM_JP2K_THREADS = 1
 
 config.after_initialize do
-  PRODUCTION_MOUNT = "/Volumes/digiserv-production"
+  PRODUCTION_MOUNT = "/usr/local/digiserv-production"
   MIGRATION_MOUNT = "/Volumes/digiserv-migration"
 
   ADMINISTRATIVE_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/administrative"
