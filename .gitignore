@@ -1,0 +1,14 @@
+.DS_Store
+.bundle
+Gemfile.lock
+db/*.sqlite3
+log/*.*
+tmp/
+.sass-cache/
+public/admin
+public/assets
+public/metadata
+tracksys.sublime-workspace
+
+config/database.yml
+lib/xslt
