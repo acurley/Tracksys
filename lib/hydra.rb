@@ -635,7 +635,7 @@ module Hydra
       end
       
       # Output each child Component as a nested <mods:relatedItem>
-      component.child_components.each do |child_component|
+      component.children.each do |child_component|
         mods_component(xml, child_component)
       end
     end
