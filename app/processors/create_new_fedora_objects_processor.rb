@@ -88,6 +88,13 @@ class CreateNewFedoraObjectsProcessor < ApplicationProcessor
         end
       end
 
+      # Components (i.e. archival/manuscript metadata objects)
+      if @object.is_a? Component
+        if not @object.discoverability?
+          on_error "The Component record #{@object.id} must have a declared discoverability."
+        end
+      end
+
       # MasterFiles (i.e. images)
       if @object.is_a? MasterFile
         @file_path = File.join(@source, @object.filename)
