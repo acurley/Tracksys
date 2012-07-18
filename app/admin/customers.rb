@@ -28,7 +28,7 @@ ActiveAdmin.register Customer do
        link_to customer.requests.size.to_s, admin_orders_path(:q => {:customer_id_eq => customer.id}, :scope => 'awaiting_approval')
     end
     column :orders do |customer|
-      link_to customer.orders_count.to_s, admin_orders_path(:q => {:customer_id_eq => customer.id}, :scope => 'approved')
+      link_to customer.orders_count.to_s, admin_orders_path(:q => {:customer_id_eq => customer.id})
     end
     column :units do |customer| 
       link_to customer.units.size.to_s, admin_units_path(:q => {:customer_id_eq => customer.id})
@@ -173,9 +173,24 @@ ActiveAdmin.register Customer do
       row :master_files do |customer|
         link_to customer.master_files_count.to_s, admin_master_files_path(:q => {:customer_id_eq => customer.id})
       end
+      row "On Behalf of Agencies" do |customer|
+        customer.agencies.sort_by(&:name).each {|agency|
+          div do 
+            link_to "#{agency.name}", admin_agency_path(agency)
+          end
+        } unless customer.agencies.empty?
+      end
       row :date_of_first_order do |customer|
         format_date(customer.date_of_first_order)
       end
     end
+  end
+
+  controller do
+    # Only cache the index view if it is the base index_url (i.e. /customers) and is devoid of either params[:page] or params[:q].  
+    # The absence of these params values ensures it is the base url.
+    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :show
+    cache_sweeper :customers_sweeper
   end
 end

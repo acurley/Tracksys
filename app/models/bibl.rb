@@ -6,9 +6,6 @@ class Bibl
 
   VIRGO_FIELDS = ['title', 'creator_name', 'creator_name_type', 'call_number', 'catalog_key', 'barcode', 'copy', 'date_external_update', 'location', 'citation', 'year', 'year_type', 'location', 'copy', 'title_control', 'date_external_update']
 
-#  after_update :fix_updated_counters
-  before_save :add_pid_before_save
-
   #------------------------------------------------------------------
   # aliases
   #------------------------------------------------------------------
@@ -25,5 +22,14 @@ class Bibl
 
   def fedora_url
     return "#{FEDORA_REST_URL}/objects/#{self.pid}"
+  end
+
+  # Returns an array of MasterFile objects (:id and :filename only) for the purposes 
+  def exemplar_master_file_filenames
+    if self.new_record?
+      return Array.new
+    else
+      return MasterFile.joins(:bibl).joins(:unit).select(:filename).select('`master_files`.id').where('`units`.include_in_dl = true').where("`bibls`.id = #{self.id}").map(&:filename)
+    end
   end
 end

@@ -32,6 +32,7 @@ ActiveAdmin.register Order do
     selectable_column
     column :id
     column ("Status") {|order| status_tag(order.order_status)}
+    column :order_title
     column ("Date Request Submitted") {|order| order.date_request_submitted.try(:strftime, "%m/%d/%y")}
     column ("Date Order Approved") {|order| order.date_order_approved.try(:strftime, "%m/%d/%y")}
     column ("Date Archiving Complete") {|order| order.date_archiving_complete.try(:strftime, "%m/%d/%y")}
@@ -177,7 +178,12 @@ ActiveAdmin.register Order do
           else
             # External customers (who require a fee) for which there IS both an estimated fee and actual fee
             # Actions available: Approve or Cancel
-            div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :method => :put end
+            if order.has_units_being_prepared.any?
+              div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :disabled => 'true', :method => :put end
+              div do "You must approve or cancel this order's units before approving." end
+            else
+              div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :method => :put end
+            end
             div :class => 'workflow_button' do button_to "Cancel Order", cancel_order_admin_order_path(order.id), :method => :put end
             div :class => 'workflow_button' do button_to "Send Fee Estimate", send_fee_estimate_to_customer_admin_order_path(order.id), :disabled => 'true', :method => :put end
             div do "Either approve or cancel this order." end  
@@ -185,7 +191,12 @@ ActiveAdmin.register Order do
         end
       elsif not order.customer.external?
         # Internal customers require no fee.
-        div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :method => :put end
+        if order.has_units_being_prepared.any?
+          div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :disabled => 'true', :method => :put end
+          div do "You must approve or cancel this order's units before approving." end
+        else
+          div :class => 'workflow_button' do button_to "Approve Order", approve_order_admin_order_path(order.id), :method => :put end
+        end
         div :class => 'workflow_button' do button_to "Cancel Order", cancel_order_admin_order_path(order.id), :method => :put end
         div :class => 'workflow_button' do button_to "Send Fee Estimate", send_fee_estimate_to_customer_admin_order_path(order.id), :method => :put, :disabled => true end
         div do "#{order.customer.full_name} is internal to UVA and requires no fee approval" end
@@ -290,5 +301,13 @@ ActiveAdmin.register Order do
     order.send_order_email
     sleep(0.5)
     redirect_to :back, :notice => "Email sent to #{order.customer.full_name}."
+  end
+
+  controller do
+    # Only cache the index view if it is the base index_url (i.e. /orders) and is devoid of either params[:page] or params[:q].  
+    # The absence of these params values ensures it is the base url.
+    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :show
+    cache_sweeper :orders_sweeper
   end
 end

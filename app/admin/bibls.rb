@@ -196,18 +196,44 @@ ActiveAdmin.register Bibl do
       row :components do |bibl|
         link_to "#{bibl.components.size}", admin_components_path(:q => {:bibls_id_eq => bibl.id})
       end
+      row "Agencies Requesting Resource" do |bibl|
+        bibl.agencies.uniq.sort_by(&:name).each {|agency|
+          div do 
+            link_to "#{agency.name}", admin_agency_path(agency)
+          end
+        } unless bibl.agencies.empty?
+      end
     end
+  end
+
+  sidebar "Digital Library Workflow", :only => [:show] do 
+    div :class => 'workflow_button' do button_to "Update All XML Datastreams", update_metadata_admin_bibl_path(:datastream => 'allxml'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Dublin Core", update_metadata_admin_bibl_path(:datastream => 'dc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Descriptive Metadata", update_metadata_admin_bibl_path(:datastream => 'desc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Relationships", update_metadata_admin_bibl_path(:datastream => 'rels_ext'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Index Record", update_metadata_admin_bibl_path(:datastream => 'solr_doc'), :method => :put end
   end
 
   form :partial => "form"
 
   collection_action :external_lookup
 
+  member_action :update_metadata, :method => :put do 
+    Bibl.find(params[:id]).update_metadata(params[:datastream])
+    redirect_to :back, :notice => "#{params[:datastream]} is being updated."
+  end
+
   action_item :only => [:edit, :new] do
     link_to "Get Metadata From VIRGO", external_lookup_admin_bibls_path, :class => 'bibl_update_button', :method => :get, :remote => true
   end
 
-  controller do 
+  controller do
+    # Only cache the index view if it is the base index_url (i.e. /bibls) and is devoid of either params[:page] or params[:q].  
+    # The absence of these params values ensures it is the base url.
+    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :show
+    cache_sweeper :bibls_sweeper
+
     #-----------------------------------------------------------------------------
     # Methods relating to updating Bibl records with metadata from an external
     # source, namely U.Va. Library catalog / Blacklight

@@ -112,7 +112,7 @@ ActiveAdmin.register Agency do
         link_to "#{agency.units.size.to_s}", admin_units_path(:q => {:agency_id_eq => agency.id})
       end
       row :bibls do |agency|
-        link_to "#{agency.bibls.size.to_s}", admin_bibls_path(:q => {:agency_id_eq => agency.id})
+        link_to "#{agency.bibls.size.to_s}", admin_bibls_path(:q => {:agencies_id_eq => agency.id})
       end
       row :master_files do |agency|
         link_to "#{agency.master_files.size.to_s}", admin_master_files_path(:q => {:agency_id_eq => agency.id})
@@ -130,5 +130,11 @@ ActiveAdmin.register Agency do
     f.inputs :class => 'columns-none' do
       f.actions
     end
+  end
+  
+  controller do
+    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :show
+    cache_sweeper :agencies_sweeper
   end
 end

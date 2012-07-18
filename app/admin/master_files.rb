@@ -216,6 +216,15 @@ ActiveAdmin.register MasterFile do
     end
   end
 
+  sidebar "Digital Library Workflow", :only => [:show] do 
+    div :class => 'workflow_button' do button_to "Update All Datastreams", update_metadata_admin_master_file_path(:datastream => 'all'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update All XML Datastreams", update_metadata_admin_master_file_path(:datastream => 'allxml'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Dublin Core", update_metadata_admin_master_file_path(:datastream => 'dc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Descriptive Metadata", update_metadata_admin_master_file_path(:datastream => 'desc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Relationships", update_metadata_admin_master_file_path(:datastream => 'rels_ext'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Index Record", update_metadata_admin_master_file_path(:datastream => 'solr_doc'), :method => :put end
+  end
+
   action_item :only => :show do
     link_to_unless(master_file.previous.nil?, "Previous", admin_master_file_path(master_file.previous))
   end
@@ -257,4 +266,18 @@ ActiveAdmin.register MasterFile do
     mf.get_from_stornext(request.env['HTTP_REMOTE_USER'].to_s)
     redirect_to :back, :notice => "Master File #{mf.filename} is now being downloaded to #{PRODUCTION_SCAN_FROM_ARCHIVE_DIR}."
   end
+
+  member_action :update_metadata, :method => :put do 
+    MasterFile.find(params[:id]).update_metadata(params[:datastream])
+    redirect_to :back, :notice => "#{params[:datastream]} is being updated."
+  end
+  
+  controller do
+    # Only cache the index view if it is the base index_url (i.e. /master_files) and is devoid of either params[:page] or params[:q].  
+    # The absence of these params values ensures it is the base url.
+    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :show
+    cache_sweeper :master_files_sweeper
+  end
 end
+

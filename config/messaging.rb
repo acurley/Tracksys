@@ -11,6 +11,8 @@ ActiveMessaging::Gateway.define do |s|
   s.processor_groups = {
     :messages_group => [
       :automation_message_processor],
+    :cache_management_group => [
+      :purge_cache_processor],
     :create_dl_deliverables_group => [
       :create_dl_deliverables_processor],
     :create_patron_deliverables_group => [
@@ -138,6 +140,7 @@ ActiveMessaging::Gateway.define do |s|
   s.queue :ingest_transcription, '/queue/IngestTranscription'
   s.queue :move_completed_directory_to_delete_directory, '/queue/MoveCompletedDirectorToDeleteDirectory'
   s.queue :move_deliverables_to_delivered_orders_directory, '/queue/MoveDeliverablesToDeliveredOrdersDirectory'
+  s.queue :purge_cache, '/queue/PurgeCache'
   s.queue :propogate_access_policies, '/queue/PropogateAccessPolicies'
   s.queue :propogate_discoverability, '/queue/PropogateDiscoverability'
   s.queue :propogate_indexing_scenarios, '/queue/PropogateIndexingScenario'
