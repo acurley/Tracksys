@@ -77,7 +77,7 @@ module Fedora
     return datastream
   end
   
-  def self.purge_object(pid)
+  def self.purge_object(pid, opts={})
     url = "/objects/#{pid}"
     @resource[url].delete
   end

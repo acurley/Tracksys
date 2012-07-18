@@ -151,14 +151,14 @@ ActiveAdmin.register Component do
   end # end show
 
   sidebar "Digital Library Workflow", :only => [:show] do 
-    div :class => 'workflow_button' do button_to "Update All XML Datastreams", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Update Dublin Core", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Update Descriptive Metadata", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Update Legacy EAD data", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Update Relationships", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Update Index Record", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Ingest Component into Repository", "/admin", :method => :get end
-    div :class => 'workflow_button' do button_to "Purge Component from Repository", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update All XML Datastreams", update_metadata_admin_bibl_path(:datastream => 'allxml'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Dublin Core", update_metadata_admin_bibl_path(:datastream => 'dc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Descriptive Metadata", update_metadata_admin_bibl_path(:datastream => 'desc_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Legacy EAD data", update_metadata_admin_bibl_path(:datastream => 'ead_metadata'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Relationships", update_metadata_admin_bibl_path(:datastream => 'rels_ext'), :method => :put end
+    div :class => 'workflow_button' do button_to "Update Index Record", update_metadata_admin_bibl_path(:datastream => 'solr_doc'), :method => :put end
+    div :class => 'workflow_button' do button_to "Ingest Component into Repository", ingest_object_admin_component_path(:id => component.id), :method => :put end
+    div :class => 'workflow_button' do button_to "Purge Component from Repository", purge_object_admin_component_path(:id => component.id), :method => :put end
   end
 
   form do |f|
@@ -211,6 +211,7 @@ ActiveAdmin.register Component do
     end
   end
 
+
   action_item :only => :show do
     link_to_unless(component.previous.nil?, "Previous", admin_component_path(component.previous))
   end
@@ -228,6 +229,28 @@ ActiveAdmin.register Component do
 		Component.find(params[:id]).create_iview_xml
 		redirect_to :back, :notice => "New Iview Catalog written to file system." 
 	end
+
+  member_action :update_metadata, :method => :put do 
+    Component.find(params[:id]).update_metadata(params[:datastream])
+    redirect_to :back, :notice => "#{params[:datastream]} is being updated."
+  end
+
+  member_action :ingest_object, :method => :put do
+    thing = Component.find(params[:id])
+    label = "test"
+    Fedora.create_or_update_object(thing, label) 
+    redirect_to :back, :notice => "#{params[:id]} is being ingested into DL repository"
+  end
+
+  member_action :purge_object, :method => :put do
+    thing = Component.find(params[:id])
+    if thing.exists_in_repo?
+      Fedora.purge_object(thing.pid, { :archive => :true } )
+      redirect_to :back, :notice => "#{params[:id]} is being purged from DL repository"
+    else
+      redirect_to :back, :notice => "#{params[:id]} not found in DL repository.  Unable to purge."
+    end
+  end
 
   controller do
     # Only cache the index view if it is the base index_url (i.e. /components) and is devoid of either params[:page] or params[:q].  
