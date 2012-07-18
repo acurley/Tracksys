@@ -75,7 +75,7 @@ ActiveAdmin.register Component do
             end
           end
           row(:desc_metadata) {|component| truncate_words(component.desc_metadata)}
-          row(:legacy_ead) {|component| pre do component.legacy_ead end }
+          row(:legacy_ead) {|component| truncate_words(component.legacy_ead) }
           row(:solr) {|component| truncate_words(component.solr)}
           row(:dc) {|component| truncate_words(component.dc)}
           row(:rels_ext) {|component| truncate_words(component.rels_ext)}
@@ -149,6 +149,17 @@ ActiveAdmin.register Component do
       end
     end   
   end # end show
+
+  sidebar "Digital Library Workflow", :only => [:show] do 
+    div :class => 'workflow_button' do button_to "Update All XML Datastreams", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update Dublin Core", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update Descriptive Metadata", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update Legacy EAD data", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update Relationships", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Update Index Record", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Ingest Component into Repository", "/admin", :method => :get end
+    div :class => 'workflow_button' do button_to "Purge Component from Repository", "/admin", :method => :get end
+  end
 
   form do |f|
     f.inputs "General Information", :class => 'inputs two-column' do 
