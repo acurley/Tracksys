@@ -75,6 +75,7 @@ ActiveAdmin.register Component do
             end
           end
           row(:desc_metadata) {|component| truncate_words(component.desc_metadata)}
+          row(:legacy_ead) {|component| pre do component.legacy_ead end }
           row(:solr) {|component| truncate_words(component.solr)}
           row(:dc) {|component| truncate_words(component.dc)}
           row(:rels_ext) {|component| truncate_words(component.rels_ext)}

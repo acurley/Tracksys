@@ -69,4 +69,4 @@ gem 'jquery-ui-rails'
 
 # To use debugger
 # gem 'ruby-debug'
-
+gem 'awesome_print'

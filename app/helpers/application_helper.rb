@@ -1,4 +1,5 @@
 require "#{Hydraulics.helpers_dir}/application_helper"
+require 'awesome_print'
 
 include TweetButton
 
