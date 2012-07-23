@@ -238,8 +238,12 @@ ActiveAdmin.register Component do
   member_action :ingest_object, :method => :put do
     thing = Component.find(params[:id])
     label = "test"
-    Fedora.create_or_update_object(thing, label) 
-    redirect_to :back, :notice => "#{params[:id]} is being ingested into DL repository"
+    if thing.pid?
+      Fedora.create_or_update_object(thing, label) 
+      redirect_to :back, :notice => "#{params[:id]} is being ingested into DL repository"
+    else
+      redirect_to :back, :alert => "Cannot ingest #{params[:id]}: does not have pid!"
+    end
   end
 
   member_action :purge_object, :method => :put do
