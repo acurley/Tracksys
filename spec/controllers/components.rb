@@ -15,7 +15,10 @@ describe "Ingest" do
   describe "ingest pidded component" do
     it "should succeed in ingesting component into fedora repository" do
       @id = @pidded_component
-      @id.should eq(244451)
+      thing = Component.find(@id)
+      label = "test label #{@id}"
+      res=Fedora.create_or_update_object(thing, label) #create returns pid, update, a timestamp
+      res.should eq(thing.pid)
     end
   end
 
@@ -26,9 +29,28 @@ describe "Ingest" do
     end
   end
 
+  describe "purge object from repository" do 
+    it "should remove an object from the repository" do
+      @id = @pidded_component
+      thing = Component.find(@id)
+
+      if ! thing.exists_in_repo?
+        Fedora.create_or_update_object(thing, "rspec built me, please delete me")
+      end
+      res = Fedora.purge_object(@thing.pid) # purge returns timestamp on success
+
+      match = res.match(Date.today.to_s)
+      match.to_s.should  eq(Date.today.to_s)
+    end
+
+
+
+  end
+
   after(:all) do
     puts "\nPurging #{@thing.pid} from test repository."
     Fedora.purge_object(@thing.pid) if @thing.exists_in_repo?
+
   end
 
 end
