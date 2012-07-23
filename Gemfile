@@ -44,6 +44,7 @@ group :test do
   gem "factory_girl_rails"
   gem "capybara"
   gem "guard-rspec"
+  gem "devise"
 end
 
 group :production, :test do
