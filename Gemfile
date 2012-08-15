@@ -44,7 +44,6 @@ group :test do
   gem "factory_girl_rails"
   gem "capybara"
   gem "guard-rspec"
-  gem "awesome_print"
 end
 
 group :production, :test do
@@ -71,3 +70,5 @@ gem 'jquery-ui-rails'
 # To use debugger
 # gem 'ruby-debug'
 
+# To version our models
+gem 'paper_trail'
