@@ -53,6 +53,7 @@ ActiveAdmin.register Component do
           row :level
           row :label
           row :ead_id_att
+          row :parent_id
           row :component_type
         end
       end
@@ -175,6 +176,11 @@ ActiveAdmin.register Component do
       f.input :level, :as => :select, :collection => Component.select(:level).uniq.map(&:level), :include_blank => false
       f.input :label
       f.input :ead_id_att
+      if params[:parent_id]
+        f.input :parent_id, :as => :string, :label => "Parent Component Id", :input_html => { :value => params[:parent_id], :disabled => true }
+      else
+        f.input :parent_id, :as => :string, :label => "Parent Component Id"
+      end
       f.input :component_type
     end
 
@@ -229,11 +235,19 @@ ActiveAdmin.register Component do
 		link_to "Create iView Catalog", export_iview_admin_component_path, :method => :put
   end
 
+  action_item :only => [:edit, :show] do
+    link_to "Create New Child Component", create_child_admin_component_path, :method => :put
+  end
+
 	# member actions
 	member_action :export_iview, :method => :put do
 		Component.find(params[:id]).create_iview_xml
 		redirect_to :back, :notice => "New Iview Catalog written to file system." 
 	end
+
+  member_action :create_child, :method => :put do
+    redirect_to :action => "new", :parent_id => params[:id]
+  end
 
   controller do
     # Only cache the index view if it is the base index_url (i.e. /components) and is devoid of either params[:page] or params[:q].  
