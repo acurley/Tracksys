@@ -58,6 +58,8 @@ config.after_initialize do
 
   ADMINISTRATIVE_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/administrative"
   IVIEW_CATALOG_EXPORT_DIR = "#{ADMINISTRATIVE_DIR_PRODUCTION}/EAD2iViewXML"
+
+	TEI_GIT_REPOSITORY = "/usr/local/projects/tei_git_repository"
 end
 
 end
