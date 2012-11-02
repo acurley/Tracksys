@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120814202451) do
+ActiveRecord::Schema.define(:version => 20121102203256) do
 
   create_table "academic_statuses", :force => true do |t|
     t.string   "name"
@@ -213,6 +213,13 @@ ActiveRecord::Schema.define(:version => 20120814202451) do
   add_index "bibls_legacy_identifiers", ["bibl_id"], :name => "index_bibls_legacy_identifiers_on_bibl_id"
   add_index "bibls_legacy_identifiers", ["legacy_identifier_id"], :name => "index_bibls_legacy_identifiers_on_legacy_identifier_id"
 
+  create_table "bibls_teis", :id => false, :force => true do |t|
+    t.integer "bibl_id"
+    t.integer "tei_id"
+  end
+
+  add_index "bibls_teis", ["bibl_id", "tei_id"], :name => "index_bibls_teis_on_bibl_id_and_tei_id"
+
   create_table "checkins", :force => true do |t|
     t.integer  "unit_id",         :default => 0, :null => false
     t.integer  "staff_member_id"
@@ -234,8 +241,8 @@ ActiveRecord::Schema.define(:version => 20120814202451) do
   add_index "component_types", ["name"], :name => "index_component_types_on_name", :unique => true
 
   create_table "components", :force => true do |t|
-    t.integer  "component_type_id",                               :default => 0,    :null => false
-    t.integer  "parent_component_id",                             :default => 0,    :null => false
+    t.integer  "component_type_id",                                 :default => 0,     :null => false
+    t.integer  "parent_component_id",                               :default => 0,     :null => false
     t.string   "title"
     t.string   "label"
     t.string   "date"
@@ -248,10 +255,10 @@ ActiveRecord::Schema.define(:version => 20120814202451) do
     t.datetime "updated_at"
     t.text     "desc_metadata"
     t.text     "rels_ext"
-    t.text     "solr",                      :limit => 2147483647
+    t.text     "solr",                        :limit => 2147483647
     t.text     "dc"
     t.text     "rels_int"
-    t.boolean  "discoverability",                                 :default => true
+    t.boolean  "discoverability",                                   :default => true
     t.integer  "indexing_scenario_id"
     t.text     "level"
     t.string   "ead_id_att"
@@ -261,12 +268,13 @@ ActiveRecord::Schema.define(:version => 20120814202451) do
     t.datetime "date_dl_ingest"
     t.datetime "date_dl_update"
     t.integer  "use_right_id"
-    t.integer  "master_files_count",                              :default => 0,    :null => false
-    t.integer  "automation_messages_count",                       :default => 0,    :null => false
+    t.integer  "master_files_count",                                :default => 0,     :null => false
+    t.integer  "automation_messages_count",                         :default => 0,     :null => false
     t.string   "exemplar"
     t.string   "ancestry"
     t.string   "pids_depth_cache"
     t.string   "ead_id_atts_depth_cache"
+    t.boolean  "master_file_discoverability",                       :default => false
     t.integer  "followed_by_id"
     t.text     "legacy_ead"
     t.text     "physical_desc"
@@ -625,6 +633,18 @@ ActiveRecord::Schema.define(:version => 20120814202451) do
 
   add_index "staff_members", ["access_level_id"], :name => "access_level_id"
   add_index "staff_members", ["computing_id"], :name => "index_staff_members_on_computing_id", :unique => true
+
+  create_table "teis", :force => true do |t|
+    t.string   "catalog_key"
+    t.string   "title"
+    t.string   "filename"
+    t.string   "filepath"
+    t.string   "pid"
+    t.string   "description"
+    t.datetime "date_dl_ingest"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
 
   create_table "unit_import_sources", :force => true do |t|
     t.integer  "unit_id",                          :default => 0, :null => false
