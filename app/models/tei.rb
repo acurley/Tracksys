@@ -42,7 +42,7 @@ class Tei < ActiveRecord::Base
     # self.discoverability = 1 if self.discoverability.nil? # For Bibl objects, the default value is 1 (i.e. is discoverable)
     
     # catalog_key is a local copy of a single Bibl's key
-    if self.catalog_key.blank? && self.bibls
+    if self.catalog_key.blank? && self.bibls != []
       begin
         self.catalog_key = self.bibls.first.catalog_key
       rescue Exception => e
