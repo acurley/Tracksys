@@ -449,6 +449,8 @@ module Hydra
             mods_component(xml, object)
           elsif object.is_a? MasterFile
             mods_master_file(xml, object)
+          elsif object.is_a? Tei
+            mods_tei(xml, object)
           end
         end
       end
@@ -668,6 +670,13 @@ module Hydra
   private_class_method :mods_location
 
   #-----------------------------------------------------------------------------
+
+  def self.mods_tei(xml, tei)
+    xml.mods :identifier, tei.pid, :type =>'pid', :displayLabel => 'UVA Library Fedora Repository PID'
+    xml.mods :titleInfo do
+      xml.mods :title, tei.title
+    end
+  end
 
   # Outputs a MasterFile record as a +mods:relatedItem+ element
   def self.mods_master_file(xml, master_file, count = nil)

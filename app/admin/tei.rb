@@ -56,7 +56,7 @@ ActiveAdmin.register Tei do
 
   sidebar "Digital Library Workflow", :only => [:show] do 
     if tei.valid?
-      div :class => 'workflow_button' do button_to "Put into Digital Library", start_ingest_from_archive_admin_tei_path(:datastream => 'all'), :method => :put end
+      div :class => 'workflow_button' do button_to "Put into Digital Library", create_new_fedora_objects_admin_tei_path(:datastream => 'all'), :method => :put end
     end
     if tei.valid?
       div :class => 'workflow_button' do button_to "Update All Datastreams", update_metadata_admin_tei_path(:datastream => 'all'), :method => :put end
@@ -69,8 +69,9 @@ ActiveAdmin.register Tei do
   end
 
  # Member actions for workflow
-  member_action :start_ingest_from_archive, :method => :put do
-    flash[:notice] = "I will do my best to foist this upon poor Fedora."
+  member_action :create_new_fedora_objects, :method => :put do
+    foo = Tei.find(params[:id]).create_new_fedora_objects
+    flash[:notice] = "I will do my best to foist this upon poor Fedora.\n#{foo.inspect}"
     redirect_to :back  
   end
 

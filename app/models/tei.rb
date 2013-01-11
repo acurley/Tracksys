@@ -1,6 +1,10 @@
 class Tei < ActiveRecord::Base
   include Pidable
 
+  # Processor information
+  require 'activemessaging/processor'
+  include ActiveMessaging::MessageSender
+
   #------------------------------------------------------------------
   # relationships
   #------------------------------------------------------------------
@@ -71,10 +75,14 @@ class Tei < ActiveRecord::Base
   #------------------------------------------------------------------
   # public class methods
   #------------------------------------------------------------------
- 
+
   #------------------------------------------------------------------
   # public instance methods
   #------------------------------------------------------------------
+  def create_new_fedora_objects
+    message = ActiveSupport::JSON.encode( {:source => self.filename, :object_class => 'Tei', :object_id => self.id, :last => 'true' } )   
+    publish :create_new_fedora_objects, message
+  end
   def in_dl?
     return self.date_dl_ingest?
   end
@@ -85,6 +93,30 @@ class Tei < ActiveRecord::Base
 
   def name
     return self.filename
+  end
+
+  def availability_policy_id
+    if self.availability_policy
+      self.availability_policy.id
+    else
+      0
+    end
+  end
+
+  def indexing_scenario_id
+    if self.indexing_scenario
+      self.indexing_scenario.id
+    else
+      0
+    end
+  end
+
+  def use_right_id
+    if self.use_right
+      self.use_right.id
+    else
+      0
+    end
   end
 
   def physical_virgo_url
