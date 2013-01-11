@@ -28,7 +28,7 @@ class IngestDcMetadataProcessor < ApplicationProcessor
     @pid = @object.pid
     instance_variable_set("@#{@object.class.to_s.underscore}_id", @object_id)      
 
-    if @object.dc
+    if @object.respond_to?(:dc) and @object.dc
       Fedora.add_or_update_datastream(@object.dc, @pid, 'DC', 'Dublin Core Record')
     else
       xml = Hydra.dc(@object)

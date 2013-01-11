@@ -125,6 +125,7 @@ module Hydra
         })
       return response.body
     elsif object.is_a? Component
+    elsif object.is_a? Tei
     else
       raise "Unexpected object type passed to Hydra.solr.  Please inspect code"
     end
@@ -306,7 +307,7 @@ module Hydra
         elsif object.is_a? Tei
           object.bibls.each do |b|
             bibl_pid = b.pid
-            xml.uva :hasCatalogRecordIn, "ref:resource".to_sym => "info:fedora/#{bibl_pid}"
+            xml.uva :hasCatalogRecordIn, "rdf:resource".to_sym => "info:fedora/#{bibl_pid}"
           end
         else
           raise RunTimeError

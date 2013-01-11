@@ -40,11 +40,16 @@ Tracksys::Application.configure do
 #  Fedora_username = 'fedoraAdmin'
 #  Fedora_password = 'fedoraAdmin'
  FEDORA_REST_URL = 'http://localhost:8080/fedora'
- SOLR_URL = "http://localhost:8983/solr/staging_solr"
+ FEDORA_PROXY_URL= 'http://localhost:8080/fedora'
+ SOLR_URL = "http://localhost:8080/apache-solr-1.4.1/virgobeta/"
+ STAGING_SOLR_URL = "http://localhost:8080/apache-solr-1.4.1/virgobeta/"
  Fedora_username = 'fedoraAdmin'
  Fedora_password = 'fedoraAdmin'
   
  TRACKSYS_URL = "http://tracksysdev.lib.virginia.edu/"
+ SAXON_URL = "localhost"
+ SAXON_PORT = "8080"
+
 #  TRACKSYS_URL_METADATA = "http://tracksysdev.lib.virginia.edu/metadata"
 #  DELIVERY_DIR = "/digiserv-delivery-test"
 #  TEI_ACCESS_URL = "http://xtf.lib.virginia.edu/xtf/view"

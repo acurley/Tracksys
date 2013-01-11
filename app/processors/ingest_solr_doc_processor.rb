@@ -29,10 +29,10 @@ class IngestSolrDocProcessor < ApplicationProcessor
     instance_variable_set("@#{@object.class.to_s.underscore}_id", @object_id)   
 
     # Open Solr Connection
-    @solr_connection = Solr::Connection.new("#{STAGING_SOLR_URL}", :autocommit => :off)
+    @solr_connection = Solr::Connection.new("#{::STAGING_SOLR_URL}", :autocommit => :off)
 
     # If an object already has a handcrafted desc_metadata value, this will be used to populate the descMetadata datastream.
-    if @object.solr
+    if @object.respond_to?(:solr) and @object.solr
       doc = Nokogiri::XML(@object.solr)
       nodes = doc.xpath("//field[@name='repository_address_display']")
       nodes[0].content = FEDORA_PROXY_URL
@@ -43,10 +43,21 @@ class IngestSolrDocProcessor < ApplicationProcessor
       Fedora.add_or_update_datastream(xml, @pid, 'solrArchive', 'Index Data for Posting to Solr', :controlGroup => 'M')
     else
       xml = Hydra.solr(@object)
-      @solr_connection.add(Hydra.read_solr_xml(xml))
-      Fedora.add_or_update_datastream(xml, @pid, 'solrArchive', 'Index Data for Posting to Solr', :controlGroup => 'M')
+      if xml # Tei and Component objects return nil!
+        @solr_connection.add(Hydra.read_solr_xml(xml))
+        Fedora.add_or_update_datastream(xml, @pid, 'solrArchive', 'Index Data for Posting to Solr', :controlGroup => 'M')
+      end
+    end
+
+    if @object.is_a?(Bibl)
+      @object.teis.each do |tei|
+        if tei.include_in_dl? && tei.date_dl_ingest.nil?
+          tei.create_new_fedora_objects
+          on_success "Tei document #{tei.id} pushed to repository #{FEDORA_PROXY_URL}"
+        end
+      end
     end
     
-    on_success "The solrArchive datastream has been created for #{@pid} - #{@object_class} #{@object_id} and posted to #{STAGING_SOLR_URL}."
+    on_success "The solrArchive datastream has been created for #{@pid} - #{@object_class} #{@object_id} and posted to #{::STAGING_SOLR_URL}."
   end
 end
