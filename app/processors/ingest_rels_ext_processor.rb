@@ -28,7 +28,7 @@ class IngestRelsExtProcessor < ApplicationProcessor
     @pid = @object.pid
     instance_variable_set("@#{@object.class.to_s.underscore}_id", @object_id)
         
-    if @object.rels_ext
+    if @object.respond_to?(:rels_ext) and @object.rels_ext
       Fedora.add_or_update_datastream(@object.rels_ext, @pid, 'RELS-EXT', 'Object Relationships', :controlGroup => 'M')
     else
       xml = Hydra.rels_ext(@object)

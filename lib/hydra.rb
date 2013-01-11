@@ -294,7 +294,7 @@ module Hydra
           if object.component
             parent_pid = object.component.pid
             xml.uva :isConstituentOf, "rdf:resource".to_sym => "info:fedora/#{parent_pid}"
-        else
+          else
             parent_pid = object.unit.bibl.pid
             xml.uva :hasCatalogRecordIn, "rdf:resource".to_sym => "info:fedora/#{parent_pid}"
           end
@@ -303,7 +303,13 @@ module Hydra
             parent_pid = object.parent_bibl.pid
             xml.uva :hasCatalogRecordIn, "rdf:resource".to_sym => "info:fedora/#{parent_pid}"
           end
+        elsif object.is_a? Tei
+          object.bibls.each do |b|
+            bibl_pid = b.pid
+            xml.uva :hasCatalogRecordIn, "ref:resource".to_sym => "info:fedora/#{bibl_pid}"
+          end
         else
+          raise RunTimeError
         end
 
         # Acquire PID of image that has been selected as the exemplar image for this Bibl.
@@ -344,6 +350,8 @@ module Hydra
         # Indicate content model using <fedora-model:hasModel>
         content_models = Array.new
         if object.is_a? Bibl or object.is_a? Component
+          content_models.push(Fedora_content_models['fedora-generic'])
+        elsif object.is_a? Tei
           content_models.push(Fedora_content_models['fedora-generic'])
         elsif object.is_a? MasterFile and object.tech_meta_type == 'image'
           content_models.push(Fedora_content_models['jp2k'])

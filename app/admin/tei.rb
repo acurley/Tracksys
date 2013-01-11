@@ -11,6 +11,20 @@ ActiveAdmin.register Tei do
       panel "Basic Information", :toggle => 'show' do
         attributes_table_for tei do
           row :title
+          if tei.bibls
+            tei.bibls.each do |b|
+              table do
+                tr do
+                  td do
+                    "Bibl record:"
+                  end
+                  td do
+                    link_to "#{b.title}", admin_bibl_path(b)
+                  end
+                end
+              end
+            end
+          end
         end
       end
     end
