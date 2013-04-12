@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'rails'
 
-gem 'activeadmin', '0.5.1' # The main administrative interface.  Keep hardcoded until testing framework is in place.
+gem 'activeadmin' # The main administrative interface.  Keep hardcoded until testing framework is in place.
 gem 'activemessaging', :git => 'git://github.com/kookster/activemessaging.git'
 gem 'ancestry' # Critical for hierarchical classes (i.e. Agency)
 gem 'axlsx' # For creating Excel spreadsheets (only DL Manifest, NOT stats report).
@@ -46,6 +46,9 @@ group :test do
 end
 
 group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'meta_request'
   gem 'seed_dump', :git => 'git://github.com/zenprogrammer/seed_dump.git'
 end
 
