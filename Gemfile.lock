@@ -18,7 +18,7 @@ GIT
     seed_dump (0.4.2)
 
 PATH
-  remote: ../hydraulics
+  remote: hydraulics
   specs:
     hydraulics (0.0.5)
       ancestry

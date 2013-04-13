@@ -12,7 +12,7 @@ gem 'daemons'
 gem 'execjs' # Needed to resolve incompatability with Fedora 12+
 gem 'exifr' # Extract information from TIFF images for creating ImageTechMeta
 gem 'foreigner' # for creating foreign key constraints in the database
-gem 'hydraulics', :git => 'git://github.com/uvalib-dcs/hydraulics.git' # Rails engine with base code for models
+gem 'hydraulics', :path => 'hydraulics' # Rails engine with base code for models
 gem 'json'
 gem 'meta_search'
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
