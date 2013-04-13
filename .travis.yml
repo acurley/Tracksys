@@ -3,7 +3,6 @@ rvm:
   - "1.9.3"
 
 before_script:
+  - git submodule update --init --recursive
   - git clone git://github.com/uvalib-dcs/hydraulics.git hydraulics
 
-before_install:
-  - git submodule update --init --recursive
