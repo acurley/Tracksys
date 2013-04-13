@@ -13,7 +13,8 @@ ActiveAdmin.register Order do
   scope :unpaid
 
   filter :id
-  filter :agency, :as => :select, :input_html => {:class => 'chzn-select', :'data-placeholder' => 'Choose an agency...'}  filter :order_title
+  filter :agency, :as => :select, :input_html => {:class => 'chzn-select', :'data-placeholder' => 'Choose an agency...'}  
+  filter :order_title
   filter :customer_id, :as => :numeric, :label => "Customer ID"
   filter :customer_last_name, :as => :string, :label => "Customer Last Name"
   filter :bibls_id, :as => :numeric
