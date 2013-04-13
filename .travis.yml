@@ -7,5 +7,4 @@ rvm:
   - "1.9.3"
 
 before_script:
-  - rake db:create
-  - rake db:schema:load
+  - rake db:setup test
