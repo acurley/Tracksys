@@ -1,0 +1,3 @@
+[submodule "hydraulics"]
+	path = hydraulics
+	url = git@github.com:uvalib-dcs/hydraulics.git
