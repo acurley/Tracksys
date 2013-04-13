@@ -8,4 +8,4 @@ rvm:
 
 before_script:
   - mysql -e 'create database tracksys_test;'
-  - rake db:test:prepare
+  - rake db:test:load
