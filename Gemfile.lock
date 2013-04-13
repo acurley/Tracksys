@@ -355,7 +355,7 @@ DEPENDENCIES
   seed_dump!
   simplecov
   solr-ruby
-  spreadsheet (= 0.6.9)
+  spreadsheet
   sqlite3
   stomp
   therubyracer

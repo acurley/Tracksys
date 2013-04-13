@@ -27,7 +27,7 @@ gem 'rmagick', :require => false # for creating patron deliverables.  :require =
 gem 'rqrcode'
 
 gem 'solr-ruby'
-gem 'spreadsheet', '0.6.9' # Still used for creating stats report, but NOT DL Manifest
+gem 'spreadsheet' # Still used for creating stats report, but NOT DL Manifest
 gem 'sqlite3'
 gem 'stomp'
 gem 'therubyracer' # Needed to resolve incompatability with Fedora 12+
