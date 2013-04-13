@@ -12,8 +12,4 @@ describe MasterFile do
   it 'is invalid with no filesize' do
     FactoryGirl.build(:master_file, filesize: nil).should_not be_valid
   end
-
-  it "should be destroyable, if it has no dependent records" do
-    FactoryGirl.build(:master_file).should be_destroyable
-  end
 end
