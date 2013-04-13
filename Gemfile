@@ -50,6 +50,7 @@ group :development do
   gem 'binding_of_caller'
   gem 'meta_request'
   gem 'seed_dump', :git => 'git://github.com/zenprogrammer/seed_dump.git'
+  gem 'travis-lint'
 end
 
 group :production do
