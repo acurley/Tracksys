@@ -14,7 +14,6 @@ gem 'exifr' # Extract information from TIFF images for creating ImageTechMeta
 gem 'foreigner' # for creating foreign key constraints in the database
 gem 'hydraulics', :path => 'hydraulics' # Rails engine with base code for models
 gem 'json'
-gem 'meta_search'
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
 gem 'mysql2'
 gem 'net-ldap' # 

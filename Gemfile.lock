@@ -337,7 +337,6 @@ DEPENDENCIES
   jquery-ui-rails
   json
   meta_request
-  meta_search
   mysql2
   nested_form!
   net-ldap
