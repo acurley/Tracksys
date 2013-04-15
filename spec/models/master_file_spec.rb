@@ -12,4 +12,7 @@ describe MasterFile do
   it 'is invalid with no filesize' do
     FactoryGirl.build(:master_file, filesize: nil).should_not be_valid
   end
+
+  # it { should validate_uniqueness_of(:filename) }
+  it { should belong_to(:unit) }
 end
