@@ -5,7 +5,7 @@ describe Customer do
     @customer = FactoryGirl.build(:customer)
   end
 
-  it { should validate_presence_of(:academic_status_id) }
+  it { should validate_presence_of :academic_status_id }
 
   it "should have an alias of name for fullname" do
     @customer.full_name.should == @customer.name
