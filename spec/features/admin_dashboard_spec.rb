@@ -4,7 +4,7 @@ describe "admin dashboard" do
   describe "visit" do
     it "renders" do
       visit "/admin"
-      response.status.should be(200)
+      page.should have_content "Tracksys - Admin Portal"
     end
   end
 end
