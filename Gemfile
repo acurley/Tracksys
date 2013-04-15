@@ -12,6 +12,7 @@ gem 'daemons'
 gem 'execjs' # Needed to resolve incompatability with Fedora 12+
 gem 'exifr' # Extract information from TIFF images for creating ImageTechMeta
 gem 'foreigner' # for creating foreign key constraints in the database
+gem 'coveralls', require: false # testing coverage monitoring
 gem 'hydraulics', :path => 'hydraulics' # Rails engine with base code for models
 gem 'json'
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
@@ -24,12 +25,11 @@ gem 'rest-client'
 gem 'roadie' # for embedding CSS in request_form emails
 gem 'rmagick', :require => false # for creating patron deliverables.  :require => false required to avoid loading this twice.  See http://stackoverflow.com/questions/3606190/rmagick-warning-while-running-server
 gem 'rqrcode'
-
 gem 'solr-ruby'
 gem 'spreadsheet' # Still used for creating stats report, but NOT DL Manifest
 gem 'sqlite3'
 gem 'stomp'
-gem 'therubyracer' # Needed to resolve incompatability with Fedora 12+
+gem "therubyracer", :require => 'v8' # Needed to resolve incompatability with Fedora 12+
 gem 'tweet-button'
 gem 'validates_timeliness'
 
@@ -41,6 +41,8 @@ group :development, :test do
 end
 
 group :test do
+  gem 'rspec-rails'
+  gem "shoulda-matchers"
   gem 'simplecov', :require => false
 end
 
