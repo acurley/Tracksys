@@ -25,7 +25,7 @@ PATH
       foreigner
       nokogiri
       rails
-      validates_timeliness
+      validates_timeliness (~> 3.0.6)
 
 GEM
   remote: http://rubygems.org/
@@ -363,7 +363,6 @@ DEPENDENCIES
   sass-rails
   seed_dump!
   shoulda-matchers
-  simplecov
   solr-ruby
   spreadsheet
   sqlite3
