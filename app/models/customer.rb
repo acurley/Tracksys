@@ -37,8 +37,7 @@ class Customer
   # public instance methods
   #------------------------------------------------------------------
   def external?
-    # if the customer is Non-UVA (academic_status.id = 1)
-    if self.academic_status_id == 1 
+    if self.academic_status.name == "Non-UVA"
       return true
     else
       return false
