@@ -8,6 +8,5 @@ public/admin
 public/assets
 public/metadata
 tracksys.sublime-workspace
-coverage/
 config/database.yml
 lib/xslt
