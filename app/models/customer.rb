@@ -37,11 +37,7 @@ class Customer
   # public instance methods
   #------------------------------------------------------------------
   def external?
-    if self.academic_status.name == "Non-UVA"
-      return true
-    else
-      return false
-    end
+    self.academic_status.name == "Non-UVA"
   end
 
   def admin_permalink
