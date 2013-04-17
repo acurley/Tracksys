@@ -1,5 +1,9 @@
-require 'coveralls'
-Coveralls.wear!('rails')
+# only run coveralls, and simplecov, if the test suite is run on Travis
+# so that it is passed to http://coveralls.io
+if ENV['TRAVIS']
+  require 'coveralls'
+  Coveralls.wear!('rails')
+end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'

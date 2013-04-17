@@ -34,6 +34,7 @@ gem 'tweet-button'
 gem 'validates_timeliness'
 
 group :development, :test do
+  gem 'faker'
   gem 'capybara'
   gem 'factory_girl_rails'
   gem 'guard-rspec'

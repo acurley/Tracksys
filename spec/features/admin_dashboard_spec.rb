@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe "admin dashboard" do
-  describe "visit" do
+  describe "GET /admin" do
     it "renders" do
-      visit "/admin"
+      visit admin_root_path
       page.should have_content "Tracksys - Admin Portal"
     end
   end
