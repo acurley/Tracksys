@@ -2,5 +2,6 @@
 
 FactoryGirl.modify do
   factory :archive do
+    name Faker::Lorem.sentence(1)
   end
 end
