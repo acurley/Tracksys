@@ -22,6 +22,7 @@ PATH
   specs:
     hydraulics (0.0.1)
       ancestry
+      faker
       foreigner
       nokogiri
       rails (~> 3.2.13)
