@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryGirl.modify do
   factory :master_file do
     filename '123.tif'
     filesize '100'
