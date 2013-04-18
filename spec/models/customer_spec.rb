@@ -13,7 +13,7 @@ describe Customer do
 
   it "should have an internal and external status" do
     @customer.external?.should be_false
-    external_customer = FactoryGirl.build(:external_customer)
+    external_customer = FactoryGirl.build(:customer_external)
     external_customer.external?.should be_true
   end
 end
