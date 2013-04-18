@@ -1,6 +1,6 @@
 class ReportMailer < ActionMailer::Base
   add_template_helper(ApplicationHelper)
-  default from: "digitalservices@virginia.edu", 
+  default from: "digitalservices@virginia.edu",
           bcc: "andrew.curley@gmail.com",
           reply_to: "digitalservices@virginia.edu"
 

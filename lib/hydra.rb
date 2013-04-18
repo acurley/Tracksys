@@ -6,8 +6,7 @@ module Hydra
 
   XML_FILE_CREATION_STATEMENT = "Created programmatically by the Digital Curation Services Tracking System."
 
-  # Returns the URL for the MARCXML file, sourced from Virgo, to be used as an 
-  # external referenced dastastream named MARC
+  # Returns the URL for the MARCXML file, sourced from Virgo, to be used as an external referenced dastastream named MARC
   def self.marc(object)
     begin 
       return "http://search.lib.virginia.edu/catalog/#{object.catalog_key}.xml" 

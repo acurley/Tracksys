@@ -4,8 +4,6 @@ class Agency
   has_ancestry
   before_save :cache_ancestry
 
-  scope :no_parent, where(:ancestry => nil)
-
   def cache_ancestry
     cached_ancestry = String.new
     if path.empty?
@@ -15,14 +13,7 @@ class Agency
     end
     self.names_depth_cache = cached_ancestry
   end
-
-  def total_order_count
-    # start with self.orders.size and then add all descendant agency's orders.size
-    count = self.orders.size
-    self.descendant_ids.each {|id| count += Agency.find(id).orders.size}
-    return count
-  end
-
+  
   # total_class_count accepts a Sting of a class related to Agency.  Thsi method intended to 
   # determine counts for both an Agency object and its descendents (see ancestry gem for more)
   # information on the 'descendent_ids' method.

@@ -18,7 +18,7 @@ class RequestsController < ApplicationController
 
     # Update that record (in memory, without saving it to database yet) with
     # values from user input
-    @customer.update_attributes(customer_params['customer_attributes'])
+    @customer.update_attributes!(customer_params['customer_attributes'])
 
     # request/order
     @request = Request.new(request_params_with_units)

@@ -17,55 +17,55 @@ module AssignPids
   # takes an array of Unit records which serves as a filter for the Units to
   # be processed; that is, a Unit must be included in the array passed to be
   # processed.
-  def self.assign_pids(bibls, units_filter = nil, pid_namespace = nil)
-    # determine how many PIDs are needed
-    pid_count = 0
-    bibls.each do |bibl|
-      pid_count += 1 if bibl.pid.blank?  # one PID for Bibl record itself
+  # def self.assign_pids(bibls, units_filter = nil, pid_namespace = nil)
+  #   # determine how many PIDs are needed
+  #   pid_count = 0
+  #   bibls.each do |bibl|
+  #     pid_count += 1 if bibl.pid.blank?  # one PID for Bibl record itself
       
-      bibl.units.each do |unit|
-        next unless UnitsFilter.process_unit?(unit, units_filter)
+  #     bibl.units.each do |unit|
+  #       next unless UnitsFilter.process_unit?(unit, units_filter)
         
-        unit.master_files.each do |master_file|
-          pid_count += 1 if master_file.pid.blank?  # one PID for each associated MasterFile
-        end
+  #       unit.master_files.each do |master_file|
+  #         pid_count += 1 if master_file.pid.blank?  # one PID for each associated MasterFile
+  #       end
         
-        unit.components.each do |component|
-          pid_count += 1 if component.pid.blank?  # one PID for each associated Component
-        end
-      end
-    end
+  #       unit.components.each do |component|
+  #         pid_count += 1 if component.pid.blank?  # one PID for each associated Component
+  #       end
+  #     end
+  #   end
     
-    return nil if pid_count.zero?
+  #   return nil if pid_count.zero?
     
-    pids = request_pids(pid_count, pid_namespace)
+  #   pids = request_pids(pid_count, pid_namespace)
     
-    if pids.length < pid_count
-      raise "Unable to retrieve the number of PIDs needed for this operation"
-    end
+  #   if pids.length < pid_count
+  #     raise "Unable to retrieve the number of PIDs needed for this operation"
+  #   end
     
-    # save pids to tracksys records as needed
-    bibls.each do |bibl|
-      bibl.pid = pids.shift if bibl.pid.blank?
-      bibl.save!
+  #   # save pids to tracksys records as needed
+  #   bibls.each do |bibl|
+  #     bibl.pid = pids.shift if bibl.pid.blank?
+  #     bibl.save!
       
-      bibl.units.each do |unit|
-        next unless UnitsFilter.process_unit?(unit, units_filter)
+  #     bibl.units.each do |unit|
+  #       next unless UnitsFilter.process_unit?(unit, units_filter)
         
-        unit.master_files.each do |master_file|
-          master_file.pid = pids.shift if master_file.pid.blank?
-          master_file.save!
-        end
+  #       unit.master_files.each do |master_file|
+  #         master_file.pid = pids.shift if master_file.pid.blank?
+  #         master_file.save!
+  #       end
         
-        unit.components.each do |component|
-          component.pid = pids.shift if component.pid.blank?
-          component.save!
-        end
-      end
-    end
+  #       unit.components.each do |component|
+  #         component.pid = pids.shift if component.pid.blank?
+  #         component.save!
+  #       end
+  #     end
+  #   end
     
-    return nil
-  end
+  #   return nil
+  # end
 
   #-----------------------------------------------------------------------------
 
