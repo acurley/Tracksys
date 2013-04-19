@@ -2,7 +2,6 @@ require "#{Hydraulics.models_dir}/component"
 
 class Component
   has_ancestry
-  include Pidable
   include ExportIviewXML
 
   before_save :copy_parent_reference
@@ -22,7 +21,7 @@ class Component
   def copy_parent_reference
     if self.parent_component_id > 0 && self.parent == nil
       self.parent = Component.find(self.parent_component_id)
-    end 
+    end
   end
 
   # overriding method because data lives in several places
@@ -37,7 +36,7 @@ class Component
   end
 
   # At this time there is no definitive field that can be used for "naming" purposes.
-  # There are several candidates (title, content_desc, label) and until we make 
+  # There are several candidates (title, content_desc, label) and until we make
   # a definitive choice, we must rely upon an aritifical method to provide the string.
   #
   # Given the inconsistencies of input data, all newlines and sequences of two or more spaces
@@ -52,14 +51,14 @@ class Component
       value = label
     elsif not date.blank?
       value = date
-    else 
+    else
       value = id # Everything has an id, so it is the LCD.
     end
     return value.to_s.strip.gsub(/\n/, ' ').gsub(/  +/, ' ')
   end
 
   # For the purposes of digitization, student workers need access to as much of the metadata available
-  # in the Component class as possible.  The 'name' method does not provide enough information in some 
+  # in the Component class as possible.  The 'name' method does not provide enough information in some
   # circumstances.  In the circumstances where a Component has both a title and content_desc, pull both.
   # Otherwise, use the default name method.
   def iview_description
@@ -71,10 +70,10 @@ class Component
     end
     return value.strip.gsub(/\n/, ' ').gsub(/  +/, ' ')
   end
-  
+
   # Returns a count of all MasterFiles belonging to both this component (i.e. self) and its children.
   # The count is used for component views.
-  # 
+  #
   # Dependent on ancestry gem.
   def descendant_master_file_count
     c = 0
@@ -103,7 +102,7 @@ class Component
 
     return master_files.flatten
   end
-    
+
   # Within the scope of a current component's parent, return the sibling component
   # objects.  Used to create links and relationships between objects.
   def sorted_siblings

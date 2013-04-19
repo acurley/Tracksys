@@ -2,12 +2,10 @@ require "#{Hydraulics.models_dir}/bibl"
 
 class Bibl
 
-  include Pidable
-
   VIRGO_FIELDS = ['title', 'creator_name', 'creator_name_type', 'call_number', 'catalog_key', 'barcode', 'copy', 'date_external_update', 'location', 'citation', 'year', 'year_type', 'location', 'copy', 'title_control', 'date_external_update']
   # Create and manage a Hash that contains the SIRSI location codes and their human readable values for citation purposes
   LOCATION_HASH = {
-    "ALD-STKS" => "Alderman Library, University of Virginia, Charlottesville, VA.", 
+    "ALD-STKS" => "Alderman Library, University of Virginia, Charlottesville, VA.",
     "ASTRO-STKS" => "Astronomy Library, University of Virginia, Charlottesville, VA.",
     "BARR-STKS" => "Clifton Waller Barrett Library of American Literature, Special Collections, University of Virginia, Charlottesville, VA.",
     "CABELJR" => "Health Sciences Library, University of Virginia, Charlottesville, VA.",
@@ -86,8 +84,8 @@ class Bibl
   # Necessary for Active Admin to poplulate pulldown menu
   alias_attribute :name, :title
 
-  # Although many Bibl records have citations provided through the MARC record, many do not 
-  # (especially those which lack a MARC record or are otherwise not cataloged in VIRGO).  As 
+  # Although many Bibl records have citations provided through the MARC record, many do not
+  # (especially those which lack a MARC record or are otherwise not cataloged in VIRGO).  As
   # a result, this method will impose some general order on the act of creating citations where
   # needed and rely upon the canonical citation when present.
   def get_citation

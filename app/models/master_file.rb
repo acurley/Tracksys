@@ -2,7 +2,6 @@ require "#{Hydraulics.models_dir}/master_file"
 
 class MasterFile
 
-  include Pidable
 
   after_update :fix_updated_counters
 
@@ -60,7 +59,7 @@ class MasterFile
     return "/metadata/#{@range_dir}/#{unit_dir}/Thumbnails_(#{unit_dir})/#{thumbnail_name}"
   end
 
-  # alias_attributes as CYA for legacy migration.  
+  # alias_attributes as CYA for legacy migration.
   alias_attribute :name_num, :title
   alias_attribute :staff_notes, :description
 
@@ -74,7 +73,7 @@ class MasterFile
     message = ActiveSupport::JSON.encode( {:workflow_type => 'patron', :unit_id => self.unit_id, :master_file_filename => self.filename, :computing_id => computing_id })
     publish :copy_archived_files_to_production, message
   end
-  
+
   def update_thumb_and_tech
     if self.image_tech_meta
       self.image_tech_meta.destroy
