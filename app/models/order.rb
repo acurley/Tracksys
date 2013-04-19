@@ -6,14 +6,13 @@ class Order
   after_update :fix_updated_counters
 
   scope :from_fine_arts, joins(:agency).where("agencies.name" => "Fine Arts Library")
-  scope :not_from_fine_arts, where('agency_id != 37 or agency_id is null')
-  
+
   # Determine if any of an Order's Units are not 'approved' or 'cancelled'
   def ready_to_approve?
     status = self.units.map(&:unit_status) & ['condition', 'copyright', 'unapproved']
     return status.empty?
   end
-  
+
   # Processor information
   require 'activemessaging/processor'
   include ActiveMessaging::MessageSender
@@ -44,7 +43,7 @@ class Order
   end
 
   def send_fee_estimate_to_customer(computing_id)
-    @user = StaffMember.find_by_computing_id(computing_id) 
+    @user = StaffMember.find_by_computing_id(computing_id)
     @first_name = @user.first_name
     message = ActiveSupport::JSON.encode( {:order_id => self.id, :first_name => @first_name})
     publish :send_fee_estimate_to_customer, message
