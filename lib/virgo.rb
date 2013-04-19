@@ -17,11 +17,11 @@ module Virgo
   # barcode from the external metadata record. For some fields, under certain
   # circumstances, such comparison is needed to disambiguate multiple MARC 999
   # (local use) fields.
-  # 
+  #
   # UPDATE: Alternatively, this method can be called by passing nil for
   # catalog_key, in which case it queries the metadata server for the barcode
   # passed.
-  # 
+  #
   # Does not save the Bibl record to the database; the Bibl object is just a
   # convenient carrier for the metadata values gleaned from the external record.
   #
@@ -48,11 +48,11 @@ module Virgo
     if catalog_key.blank? and barcode.blank?
       raise ArgumentError, "BiblExternalUpdate#external_lookup: catalog_key and barcode are both blank; nothing to look up"
     end
-    
+
     # instantiate a new Bibl object to populate with values and return
     bibl = Bibl.new
     bibl.date_external_update = Time.now
-    
+
     # open HTTP session
     Net::HTTP.start( @metadata_server) do |http|
       # query the metadata server for this catalog ID or barcode
@@ -63,15 +63,15 @@ module Virgo
         # query for catalog ID
         xml_doc = query_metadata_server(http, catalog_key)
       end
-      
+
       # from the server's response XML, get the <doc> element (which
       # contains everything we're interested in here)
       doc = get_main_element(xml_doc, catalog_key)
-      
+
       # pull values from <doc> element and plug those values into Bibl object
       set_bibl_attributes(doc, bibl, barcode)
     end
-    
+
     return bibl
   end
 
@@ -91,14 +91,14 @@ module Virgo
           #add_notification(computing_id, bibl.id, 'missing_catalog_key')
           next
         end
-        
+
         # query the metadata server for this catalog ID
         # Note: Any exception occurring here is likely to occur for all Bibl
         # objects; instead of saving a notification for each and every Bibl
         # object, let exceptions bubble up to calling method to be handled for
         # the whole process.
         xml_doc = query_metadata_server(http, bibl.catalog_key)
-        
+
         # from the server's response XML, get the <doc> element (which
         # contains everything we're interested in here)
         begin
@@ -108,16 +108,16 @@ module Virgo
           # add_notification(computing_id, bibl.id, 'record_not_found')
           next
         end
-        
+
         # pull values from <doc> element and plug those values into Bibl object
         set_bibl_attributes(doc, bibl, bibl.barcode)
-        
+
         # save changes to Bibl record
         bibl.save
         # add_notification(computing_id, bibl.id, 'updated')
       end
     end
-    
+
     return nil
   end
 
@@ -173,19 +173,19 @@ module Virgo
     else
       compare_barcode = compare_barcode.strip.upcase  # normalize for comparison
     end
-    
+
     # catalog ID
     el = REXML::XPath.first(doc, "arr[@name='id']/str")
     bibl.catalog_key = el.text unless el.nil?
-    
+
     # title
     el = REXML::XPath.first(doc, "arr[@name='title_display']/str")
     bibl.title = el.text unless el.nil?
-    
+
     # creator name
     el = REXML::XPath.first(doc, "arr[@name='author_display']/str")
     bibl.creator_name = el.text unless el.nil?
-    
+
     # Get MARC XML record (embedded in Blacklight response in <arr name="marc_display">)
     marc_record = nil
     el = REXML::XPath.first(doc, "str[@name='marc_display']")
@@ -198,7 +198,7 @@ module Virgo
       # we're highlighting the fields that actually get updated (see
       # BiblController#external_lookup)
     end
-    
+
     if marc_record
       # title
       #
@@ -218,7 +218,7 @@ module Virgo
           end
         end
       end
-      
+
       # creator name type (personal or corporate)
       marc100 = REXML::XPath.first(marc_record, "datafield[@tag='100']")
       marc110 = REXML::XPath.first(marc_record, "datafield[@tag='110']")
@@ -230,7 +230,7 @@ module Virgo
       else
         bibl.creator_name_type = nil
       end
-      
+
       # title control number
       #
       # MARC 035 is repeatable; we want the Sirsi control number
@@ -250,7 +250,7 @@ module Virgo
           end
         end
       end
-      
+
       # year
       #
       # Get date of publication from MARC 260$c. Both field 260 and subfield c
@@ -263,7 +263,7 @@ module Virgo
 
       # Note: For call number, we don't want MARC 050, which is the LC call
       # number; we want the local/UVa call number, which is in 999$a.
-      
+
       # Get call number, copy, and location from MARC 999 (local use) field
       #
       # <datafield tag='999' ind1=' ' ind2=' '>
@@ -294,26 +294,26 @@ module Virgo
         else
           barcode = ''
         end
-        
+
         # Get local call number from subfield "a"
         marc999a = REXML::XPath.first(marc999, "subfield[@code='a']")
         if marc999a and marc999a.text
           barcodes[barcode]['call_number'] = marc999a.text.strip unless barcode.blank?
         end
-        
+
         # Get copy from subfield "c"
         marc999c = REXML::XPath.first(marc999, "subfield[@code='c']")
         if marc999c and marc999c.text
           barcodes[barcode]['copy'] = marc999c.text.strip unless barcode.blank?
         end
-        
+
         # Get location from subfield "l"
         marc999l = REXML::XPath.first(marc999, "subfield[@code='l']")
         if marc999l and marc999l.text
           barcodes[barcode]['location'] = marc999l.text.strip unless barcode.blank?
         end
       end
-      
+
       # If barcode passed matches a barcode found in a MARC 999 field, then set
       # the call number, copy, and location associated with that barcode
       if barcodes.has_key? compare_barcode
@@ -332,7 +332,7 @@ module Virgo
         end
       end
     end  # END if marc_record
-    
+
     # record date/time this Bibl record was updated from external source
     bibl.date_external_update = Time.now
   end
