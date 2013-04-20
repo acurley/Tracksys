@@ -1,12 +1,14 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 
+FEDORA_NAMESPACE = 'test'
+
 # Finalization Variables
 PRODUCTION_MOUNT = "/digiserv-production"
 MIGRATION_MOUNT = "/digiserv-migration"
 
-FINALIZATION_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/finalization" 
-FINALIZATION_DIR_MIGRATION = "#{MIGRATION_MOUNT}/finalization" 
+FINALIZATION_DIR_PRODUCTION = "#{PRODUCTION_MOUNT}/finalization"
+FINALIZATION_DIR_MIGRATION = "#{MIGRATION_MOUNT}/finalization"
 
 FINALIZATION_DROPOFF_DIR_MIGRATION = "#{FINALIZATION_DIR_MIGRATION}/10_dropoff"
 FINALIZATION_DROPOFF_DIR_PRODUCTION = "#{FINALIZATION_DIR_PRODUCTION}/10_dropoff"
@@ -55,7 +57,7 @@ TEI_ARCHIVE_DIR = "#{ARCHIVE_READ_DIR}/tracksys_tei_xml_depository"
 XTF_DELIVERY_DIR = "/xtf_delivery/text"
 
 # Will have to change this one when I figure out where to put the jp2k images
-BASE_DESTINATION_PATH_DL  = "#{FINALIZATION_DIR_PRODUCTION}/30_process_deliverables" 
+BASE_DESTINATION_PATH_DL  = "#{FINALIZATION_DIR_PRODUCTION}/30_process_deliverables"
 
 # VIRGO (Blacklight) URL for catalog linking in UI
 VIRGO_URL = "http://search.lib.virginia.edu/catalog"

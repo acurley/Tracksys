@@ -67,6 +67,7 @@ Tracksys::Application.configure do
   FEDORA_REST_URL = ''
   FEDORA_PROXY_URL = ''
   SOLR_URL = ''
+  FEDORA_NAMESPACE = 'uva-lib'
 
   # Set the number of threads dedicated to JP2K creation.
   NUM_JP2K_THREADS = 2

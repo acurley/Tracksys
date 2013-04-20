@@ -4,3 +4,7 @@
 [![Dependency Status](https://gemnasium.com/uvalib-dcs/tracksys.png)](https://gemnasium.com/uvalib-dcs/tracksys)
 [![Coverage Status](https://coveralls.io/repos/uvalib-dcs/tracksys/badge.png?branch=master)](https://coveralls.io/r/uvalib-dcs/tracksys)
 [![Code Climate](https://codeclimate.com/github/uvalib-dcs/tracksys.png)](https://codeclimate.com/github/uvalib-dcs/tracksys)
+
+    git submodule update --init
+    cd hydraulics
+    git checkout master
