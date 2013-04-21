@@ -6,6 +6,7 @@ class Order
   after_update :fix_updated_counters
 
   scope :from_fine_arts, joins(:agency).where("agencies.name" => "Fine Arts Library")
+  scope :not_from_fine_arts, where('agency_id != 37 or agency_id is null')
 
   # Determine if any of an Order's Units are not 'approved' or 'cancelled'
   def ready_to_approve?
