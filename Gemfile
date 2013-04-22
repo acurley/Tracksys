@@ -17,7 +17,7 @@ gem 'hydraulics', :path => 'hydraulics' # Rails engine with base code for models
 gem 'json'
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
 gem 'mysql2'
-gem 'net-ldap' # 
+gem 'net-ldap' #
 gem 'nokogiri-pretty' # prettfying XML files (esp. MODS, but rarely TEI)
 gem 'paper_trail' # To version our models
 gem 'prawn' # creating PDF outputs (see Invoice class)
@@ -44,6 +44,7 @@ end
 group :test do
   gem 'rspec-rails'
   gem "shoulda-matchers"
+  gem 'webmock'
 end
 
 group :development do
