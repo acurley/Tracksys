@@ -15,8 +15,9 @@ gem 'foreigner' # for creating foreign key constraints in the database
 gem 'coveralls', require: false # testing coverage monitoring
 gem 'hydraulics', :path => 'hydraulics' # Rails engine with base code for models
 gem 'json'
-gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
+gem 'loggable'
 gem 'mysql2'
+gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git' # Used on request form
 gem 'net-ldap' #
 gem 'nokogiri-pretty' # prettfying XML files (esp. MODS, but rarely TEI)
 gem 'paper_trail' # To version our models

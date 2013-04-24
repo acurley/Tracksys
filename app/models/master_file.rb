@@ -1,8 +1,6 @@
 require "#{Hydraulics.models_dir}/master_file"
 
 class MasterFile
-
-
   after_update :fix_updated_counters
 
   # Within the scope of a current MasterFile's Unit, return the MasterFile object
