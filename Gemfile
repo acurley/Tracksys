@@ -7,11 +7,9 @@ gem 'devise'
 gem 'execjs'
 gem 'therubyracer'
 
-gem 'hydraulics', path: 'lib/hydraulics'
 gem 'activeadmin', '0.6.0'
 # gem 'activeadmin', :path => '../active_admin'
 gem 'sass-rails'
-gem 'meta_search',    '>= 1.1.0.pre'
 gem 'passenger'
 
 gem 'sqlite3'
