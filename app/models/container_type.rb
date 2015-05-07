@@ -1,4 +1,5 @@
-require "#{Hydraulics.models_dir}/container_type"
+class ContainerType < ActiveRecord::Base
+  has_many :containers
 
-class ContainerType
+  validates :name, :presence => true
 end

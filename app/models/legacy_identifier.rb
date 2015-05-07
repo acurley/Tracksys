@@ -1,8 +1,14 @@
-require "#{Hydraulics.models_dir}/legacy_identifier"
-
-class LegacyIdentifier
-  #------------------------------------------------------------------
-  # relationships
-  #------------------------------------------------------------------
+class LegacyIdentifier < ActiveRecord::Base
+  has_and_belongs_to_many :bibls
+  has_and_belongs_to_many :components
+  has_and_belongs_to_many :master_files
   has_and_belongs_to_many :units
+
+  def destroyable?
+    if self.master_files.empty? and self.components.empty? and self.bibls.empty?
+      return true
+    else
+      return false
+    end    
+  end
 end

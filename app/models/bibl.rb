@@ -1,10 +1,80 @@
-require "#{Hydraulics.models_dir}/bibl"
-
-class Bibl
+class Bibl < ActiveRecord::Base
 
   include Pidable
+
+  belongs_to :availability_policy, :counter_cache => true
+  belongs_to :indexing_scenario, :counter_cache => true
+  belongs_to :use_right, :counter_cache => true
+  belongs_to :index_destination, :counter_cache => true
   
+  has_and_belongs_to_many :legacy_identifiers
+  has_and_belongs_to_many :components
+
+  has_many :agencies, :through => :orders
+  has_many :automation_messages, :as => :messagable, :dependent => :destroy
+  has_many :customers, :through => :orders, :uniq => true
+  has_many :master_files, :through => :units
+  has_many :orders, :through => :units, :uniq => true
+  has_many :units
+
+  scope :approved, where(:is_approved => true)
+  scope :dpla, where(:dpla => true)
+  scope :in_digital_library, where("bibls.date_dl_ingest is not null").order("bibls.date_dl_ingest DESC")
+  scope :not_in_digital_library, where("bibls.date_dl_ingest is null")
+  scope :not_approved, where(:is_approved => false)
+  scope :has_exemplars, where("exemplar is NOT NULL")
+  scope :need_exemplars, where("exemplar is NULL")
+
+  delegate :id, :email,
+    :to => :customers, :allow_nil => true, :prefix => true
+ 
+  validates :availability_policy, :presence => {
+    :if => 'self.availability_policy_id',
+    :message => "association with this AvailabilityPolicy is no longer valid because it no longer exists."
+  }
+  validates :indexing_scenario, :presence => {
+    :if => 'self.indexing_scenario_id',
+    :message => "association with this IndexingScenario is no longer valid because it no longer exists."
+  }
+
+  before_save do    
+    # boolean fields cannot be NULL at database level
+    self.is_approved = 0 if self.is_approved.nil?
+    self.is_collection = 0 if self.is_collection.nil?
+    self.is_in_catalog = 0 if self.is_in_catalog.nil?
+    self.is_manuscript = 0 if self.is_manuscript.nil?
+    self.is_personal_item = 0 if self.is_personal_item.nil?
+    self.discoverability = 1 if self.discoverability.nil? # For Bibl objects, the default value is 1 (i.e. is discoverable)
+    
+    # get pid
+    if self.pid.blank?
+      begin
+        self.pid = AssignPids.get_pid
+      rescue Exception => e
+        #ErrorMailer.deliver_notify_pid_failure(e) unless @skip_pid_notification
+      end
+    end
+
+    # Moved from after_initialize in order to make compliant with 2.3.8
+    if self.is_in_catalog.nil?
+      # set default value
+      if self.is_personal_item?
+        self.is_in_catalog = false
+      else
+        # held by Library; default to assuming it's in Library catalog
+        self.is_in_catalog = true
+      end
+    end
+  end
+  
+  before_destroy :destroyable?
+
   after_update :fix_updated_counters
+
+  CREATOR_NAME_TYPES = %w[corporate personal]
+  YEAR_TYPES = %w[copyright creation publication]
+  GENRES = ['abstract or summary', 'art original', 'art reproduction', 'article', 'atlas', 'autobiography', 'bibliography', 'biography', 'book', 'catalog', 'chart', 'comic strip', 'conference publication', 'database', 'dictionary', 'diorama', 'directory', 'discography', 'drama', 'encyclopedia', 'essay', 'festschrift', 'fiction', 'filmography', 'filmstrip', 'finding aid', 'flash card', 'folktale', 'font', 'game', 'government publication', 'graphic', 'globe', 'handbook', 'history', 'hymnal', 'humor, satire', 'index', 'instruction', 'interview', 'issue', 'journal', 'kit', 'language instruction', 'law report or digest', 'legal article', 'legal case and case notes', 'legislation', 'letter', 'loose-leaf', 'map', 'memoir', 'microscope slide', 'model', 'motion picture', 'multivolume monograph', 'newspaper', 'novel', 'numeric data', 'offprint', 'online system or service', 'patent', 'periodical', 'picture', 'poetry', 'programmed text', 'realia', 'rehearsal', 'remote sensing image', 'reporting', 'review', 'script', 'series', 'short story', 'slide', 'sound', 'speech', 'statistics', 'survey of literature', 'technical drawing', 'technical report', 'thesis', 'toy', 'transparency', 'treaty', 'videorecording', 'web site']
+  RESOURCE_TYPES = ['text', 'cartographic', 'notated music', 'sound recording', 'sound recording-musical', 'sound recording-nonmusical', 'still image', 'moving image', 'three dimensional object', 'software, multimedia', 'mixed material']
 
   VIRGO_FIELDS = ['title', 'creator_name', 'creator_name_type', 'call_number', 'catalog_key', 'barcode', 'copy', 'date_external_update', 'location', 'citation', 'year', 'year_type', 'location', 'copy', 'title_control', 'date_external_update', 'cataloging_source']
   # Create and manage a Hash that contains the SIRSI location codes and their human readable values for citation purposes
@@ -91,13 +161,13 @@ class Bibl
   #------------------------------------------------------------------
   # scopes - maybe this belongs in hydraulics engine along with others (sdm7g)
   #------------------------------------------------------------------
-  scope :dpla, where(:dpla => true)
 
 
   #------------------------------------------------------------------
   # relationships
   #------------------------------------------------------------------
-  belongs_to :index_destination, :counter_cache => true
+
+
 
 
   # Although many Bibl records have citations provided through the MARC record, many do not 

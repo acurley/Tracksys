@@ -1,14 +1,17 @@
-require "#{Hydraulics.models_dir}/request"
-
-class Request
+class Request < Order
   belongs_to :customer, :inverse_of => :requests
 
   accepts_nested_attributes_for :units
   accepts_nested_attributes_for :customer
 
+  validates :is_approved, :inclusion => { :in => [false] }
   validates :units, :presence => {
     :message => 'are required.  Please add at least one item to your request.'
   }
 
   validates_presence_of :customer
+
+  def Request.class_description
+    return 'A Request is an Order that has not been approved for digitization.'
+  end
 end

@@ -1,6 +1,15 @@
-require "#{Hydraulics.models_dir}/invoice"
+class Invoice < ActiveRecord::Base
 
-class Invoice
+  belongs_to :order, :counter_cache => true
+
+  validates :order_id, :presence => true
+  validates :order, :presence => {
+    :message => "association with this Order is no longer valid because it does not exist."
+  }
+
+  delegate :date_order_approved, :date_customer_notified,
+    :to => :order, :allow_nil => true, :prefix => true
+
   def self.outstanding_as_of(date=0.days.ago)
     if ! date.kind_of?(ActiveSupport::TimeWithZone)
       logger.error "#{self.name}#outstanding_as_of Expecting ActiveSupport::TimeWithZone as argument. Got #{date.class} instead"
