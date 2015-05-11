@@ -36,16 +36,13 @@ class Unit < ActiveRecord::Base
   # The request form requires having data stored temporarily to the unit model and then concatenated into special instructions.  Those fields are:
   attr_accessor :request_call_number, :request_copy_number, :request_volume_number, :request_issue_number, :request_location, :request_title, :request_author, :request_year, :request_description, :request_pages_to_digitize
 
-  # Override Hydraulics Unit.overdue_materials and Unit.checkedout_materials scopes becuase our data should only concern itself 
-  # with those materials checkedout a few months before Tracksys 3 goes live (i.e. before March 1st?)
+  # Our data should only concern itself with those materials checkedout a few months before Tracksys 3 goes live (i.e. before March 1st?)
   scope :overdue_materials, where("date_materials_received IS NOT NULL AND date_archived IS NOT NULL AND date_materials_returned IS NULL").where('date_materials_received >= "2012-03-01"')
   scope :checkedout_materials, where("date_materials_received IS NOT NULL AND date_materials_returned IS NULL").where('date_materials_received >= "2012-03-01"')
   scope :uncompleted_units_of_partially_completed_orders, includes(:order).where(:unit_status => 'approved', :date_archived => nil).where('intended_use_id != 110').where('orders.date_finalization_begun is not null')
 
   scope :in_repo, where("date_dl_deliverables_ready IS NOT NULL").order("date_dl_deliverables_ready DESC")
   scope :ready_for_repo, where(:include_in_dl => true).where("`units`.availability_policy_id IS NOT NULL").where(:date_queued_for_ingest => nil).where("date_archived is not null")
-  scope :checkedout_materials, where("date_materials_received IS NOT NULL AND date_materials_returned IS NULL")
-  scope :overdue_materials, where("date_materials_received IS NOT NULL AND date_archived IS NOT NULL AND date_materials_returned IS NULL")
   scope :awaiting_copyright_approval, where(:unit_status => 'copyright')
   scope :awaiting_condition_approval, where(:unit_status => 'condition')
   scope :approved, where(:unit_status => 'approved')

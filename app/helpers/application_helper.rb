@@ -1,5 +1,3 @@
-require "#{Hydraulics.helpers_dir}/application_helper"
-
 include TweetButton
 
 module ApplicationHelper

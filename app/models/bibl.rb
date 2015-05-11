@@ -152,23 +152,8 @@ class Bibl < ActiveRecord::Base
     "STACKS" => "Special Collections, University of Virginia, Charlottesville, VA.",
     "Reading Room" => "Special Collection, University of Virginia, Charlottesville, VA."
   }
-  #------------------------------------------------------------------
-  # aliases
-  #------------------------------------------------------------------
-  # Necessary for Active Admin to poplulate pulldown menu
+  
   alias_attribute :name, :title
-
-  #------------------------------------------------------------------
-  # scopes - maybe this belongs in hydraulics engine along with others (sdm7g)
-  #------------------------------------------------------------------
-
-
-  #------------------------------------------------------------------
-  # relationships
-  #------------------------------------------------------------------
-
-
-
 
   # Although many Bibl records have citations provided through the MARC record, many do not 
   # (especially those which lack a MARC record or are otherwise not cataloged in VIRGO).  As 

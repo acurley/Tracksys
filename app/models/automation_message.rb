@@ -123,8 +123,6 @@ class AutomationMessage < ActiveRecord::Base
   # Formats +app+ value for display
   def app_display
     return case app
-    when 'hydraulics'
-      'Tracking System'
     when 'deligen'
       'Deliverables Generator'
     else
