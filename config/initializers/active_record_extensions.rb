@@ -4,3 +4,4 @@ require 'fix_null_in_serialized_attributes'
 require 'set_blank_values_to_nil' # located in hydraulics
 require 'override_filter_numeric_input'
 require 'override_filter_string_input'
+require 'custom_validators'

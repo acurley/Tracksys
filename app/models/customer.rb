@@ -1,7 +1,5 @@
 class Customer < ActiveRecord::Base
   include Rails.application.routes.url_helpers # neeeded for _path helpers to work in models
-  accepts_nested_attributes_for :primary_address
-  accepts_nested_attributes_for :billable_address, :reject_if => :all_blank
 
   belongs_to :academic_status, :counter_cache => true
   belongs_to :department, :counter_cache => true
