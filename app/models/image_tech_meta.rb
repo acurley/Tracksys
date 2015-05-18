@@ -3,16 +3,15 @@
 # MasterFile of type "image".
 class ImageTechMeta < ActiveRecord::Base
   belongs_to :master_file
-  
 
-  validates :master_file_id, :presence => true
-  validates :master_file_id, :uniqueness => true
-  validates :resolution, :width, :height, :depth, :numericality => {:greater_than => 0, :allow_nil => true}
-  validates :master_file, :presence => {
-    :message => "association with this MasterFile is no longer valid because the MasterFile object no longer exists."
+  validates :master_file_id, presence: true
+  validates :master_file_id, uniqueness: true
+  validates :resolution, :width, :height, :depth, numericality: { greater_than: 0, allow_nil: true }
+  validates :master_file, presence: {
+    message: 'association with this MasterFile is no longer valid because the MasterFile object no longer exists.'
   }
 
-   def mime_type
+  def mime_type
     if format.blank?
       return nil
     else
@@ -20,7 +19,7 @@ class ImageTechMeta < ActiveRecord::Base
       if format.match(/^(gif|jpeg|tiff)$/i)
         return "image/#{format.downcase}"
       elsif format.match(/^mrsid$/i)
-        return "image/x-mrsid"
+        return 'image/x-mrsid'
       elsif format.match(/^jpeg ?2000$/i)
         return 'image/jp2'
       # text formats
@@ -36,26 +35,25 @@ class ImageTechMeta < ActiveRecord::Base
         return nil
       end
     end
+ end
+
+  def self.width_description
+    'Image width/height in pixels.'
   end
 
-  def ImageTechMeta.width_description
-    return 'Image width/height in pixels.'
+  def self.depth_description
+    'Color depth in bits. Normally 1 for bitonal, 8 for grayscale, 24 for color.'
   end
 
-  def ImageTechMeta.depth_description
-    return 'Color depth in bits. Normally 1 for bitonal, 8 for grayscale, 24 for color.'
+  def self.compression_description
+    'Name of compression scheme, or "Uncompressed" for no compression.'
   end
-
-  def ImageTechMeta.compression_description
-    return 'Name of compression scheme, or "Uncompressed" for no compression.'
-  end
-
 
   #------------------------------------------------------------------
   # public instance methods
   #------------------------------------------------------------------
   # Returns this record's +image_format+ value.
   def format
-    return image_format
+    image_format
   end
 end

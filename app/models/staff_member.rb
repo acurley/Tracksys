@@ -1,16 +1,15 @@
 class StaffMember < ActiveRecord::Base
-
   #------------------------------------------------------------------
   # relationships
   #------------------------------------------------------------------
-  has_many :automation_messages, :as => :messagable, :dependent => :destroy
+  has_many :automation_messages, as: :messagable, dependent: :destroy
 
   #------------------------------------------------------------------
   # validation
   #------------------------------------------------------------------
-  validates :computing_id, :presence => true, :uniqueness => {:case_sensitive => false}
+  validates :computing_id, presence: true, uniqueness: { case_sensitive: false }
 
-public
+  public
 
   #------------------------------------------------------------------
   # public class methods
@@ -18,10 +17,9 @@ public
 
   # Returns a string containing a brief, general description of this
   # class/model.
-  def StaffMember.class_description
-    return 'Staff Member represents an internal staff member, with an Access Level into the system and Tasks to perform.'
+  def self.class_description
+    'Staff Member represents an internal staff member, with an Access Level into the system and Tasks to perform.'
   end
-
 
   #------------------------------------------------------------------
   # public instance methods
@@ -44,7 +42,7 @@ public
   # Returns a string containing the label that identifies this
   # particular object -- the UVA computing ID of this StaffMember.
   def label
-    return computing_id
+    computing_id
   end
 
   # Returns a string containing the StaffMember name to be displayed
@@ -56,11 +54,9 @@ public
     if out.blank?
       out = computing_id.to_s
     else
-      if not computing_id.blank?
-        out += ' (' + computing_id + ')'
-      end
+      out += ' (' + computing_id + ')' unless computing_id.blank?
     end
-    return out
+    out
   end
 
   # Same as +list_name+ but formats StaffMember name for alphabetic
@@ -70,13 +66,13 @@ public
   # <tt>list_name(true)</tt>. Example:
   #   collection_select :task, :staff_member_id, @staff_members, :id, :list_name_alpha
   def list_name_alpha
-    return list_name(true)
+    list_name(true)
   end
 
   # Returns a string: the first name, if available; otherwise the
   # UVA computing ID (which is required and thus always available).
   def salutation
-    if not first_name.blank?
+    if !first_name.blank?
       return first_name
     else
       return computing_id
@@ -90,9 +86,8 @@ public
   # Active Record callback; gets called before saving record to database
   def before_save
     # boolean fields cannot be NULL at database level
-    self.is_active = 0 if self.is_active.nil?
+    self.is_active = 0 if is_active.nil?
   end
 
   alias_attribute :name, :full_name
-
 end

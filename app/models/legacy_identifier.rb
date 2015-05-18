@@ -5,10 +5,10 @@ class LegacyIdentifier < ActiveRecord::Base
   has_and_belongs_to_many :units
 
   def destroyable?
-    if self.master_files.empty? and self.components.empty? and self.bibls.empty?
+    if master_files.empty? && components.empty? && bibls.empty?
       return true
     else
       return false
-    end    
+    end
   end
 end

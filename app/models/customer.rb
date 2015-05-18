@@ -1,75 +1,75 @@
 class Customer < ActiveRecord::Base
   include Rails.application.routes.url_helpers # neeeded for _path helpers to work in models
 
-  belongs_to :academic_status, :counter_cache => true
-  belongs_to :department, :counter_cache => true
-  belongs_to :heard_about_service, :counter_cache => true
-  
-  has_many :orders, :inverse_of => :customer
-  has_many :requests, :conditions => ['orders.order_status = ?', 'requested'], :inverse_of => :customer
-  has_many :units, :through => :orders
-  has_many :master_files, :through => :units
-  has_many :bibls, :through => :units, :uniq => true
-  has_many :invoices, :through => :orders
-  has_many :agencies, :through => :orders, :uniq => true
-  has_many :heard_about_resources, :through => :orders, :uniq => true
-  
-  has_one :primary_address, :class_name => 'Address', :as => :addressable, :conditions => {:address_type => 'primary'}, :dependent => :destroy, :autosave => true
-  has_one :billable_address, :class_name => 'Address', :as => :addressable, :conditions => {:address_type => 'billable_address'}, :dependent => :destroy, :autosave => true
+  belongs_to :academic_status, counter_cache: true
+  belongs_to :department, counter_cache: true
+  belongs_to :heard_about_service, counter_cache: true
 
-  accepts_nested_attributes_for :primary_address, :update_only => true
-  accepts_nested_attributes_for :billable_address, :reject_if => :all_blank
+  has_many :orders, inverse_of: :customer
+  has_many :requests, conditions: ['orders.order_status = ?', 'requested'], inverse_of: :customer
+  has_many :units, through: :orders
+  has_many :master_files, through: :units
+  has_many :bibls, through: :units, uniq: true
+  has_many :invoices, through: :orders
+  has_many :agencies, through: :orders, uniq: true
+  has_many :heard_about_resources, through: :orders, uniq: true
+
+  has_one :primary_address, class_name: 'Address', as: :addressable, conditions: { address_type: 'primary' }, dependent: :destroy, autosave: true
+  has_one :billable_address, class_name: 'Address', as: :addressable, conditions: { address_type: 'billable_address' }, dependent: :destroy, autosave: true
+
+  accepts_nested_attributes_for :primary_address, update_only: true
+  accepts_nested_attributes_for :billable_address, reject_if: :all_blank
   accepts_nested_attributes_for :orders
 
   delegate :organization,
-    :to => :primary_address, :allow_nil => true, :prefix => true
+           to: :primary_address, allow_nil: true, prefix: true
   delegate :organization,
-    :to => :billable_address, :allow_nil => true, :prefix => true
- 
+           to: :billable_address, allow_nil: true, prefix: true
+
   after_update :fix_updated_counters
   before_destroy :destroyable?
-  
+
   has_paper_trail
 
-  validates :academic_status_id, :presence => true
-  validates :last_name, :first_name, :email, :presence => {
-    :message => 'is required.'
+  validates :academic_status_id, presence: true
+  validates :last_name, :first_name, :email, presence: {
+    message: 'is required.'
   }
-  validates :email, :uniqueness => true, :email => true # Email serves as a Customer object's unique identifier
-  validates :last_name, :first_name, :person_name_format => true
+  validates :email, uniqueness: true, email: true # Email serves as a Customer object's unique identifier
+  validates :last_name, :first_name, person_name_format: true
 
   validates_presence_of :primary_address
 
   # Validating presence of continued association with valid external data
-  validates :heard_about_service, 
-            :presence => {
-              :if => 'self.heard_about_service_id', 
-              :message => "association with this Customer is no longer valid because the Heard About Service object does not exists."
-            }    
-          
-  validates :academic_status, 
-            :presence => {
-              :if => 'self.academic_status_id', 
-              :message => "association with this Customer is no longer valid because the Academic Status object does not exists."
-            }    
-  validates :department, 
-            :presence => {
-              :if => 'self.department_id', 
-              :message => "association with this Customer is no longer valid because the Department object no longer exists."
+  validates :heard_about_service,
+            presence: {
+              if: 'self.heard_about_service_id',
+              message: 'association with this Customer is no longer valid because the Heard About Service object does not exists.'
             }
 
-  default_scope :order => [:last_name, :first_name]
-  scope :has_unpaid_invoices, lambda{ where('customers.id > 0').joins(:orders).joins(:invoices).where('invoices.date_fee_paid' => nil).where('orders.fee_actual > 0').uniq }
- 
-   # Returns a string containing a brief, general description of this
+  validates :academic_status,
+            presence: {
+              if: 'self.academic_status_id',
+              message: 'association with this Customer is no longer valid because the Academic Status object does not exists.'
+            }
+  validates :department,
+            presence: {
+              if: 'self.department_id',
+              message: 'association with this Customer is no longer valid because the Department object no longer exists.'
+            }
+
+  default_scope order: [:last_name, :first_name]
+  scope :has_unpaid_invoices, -> { where('customers.id > 0').joins(:orders).joins(:invoices).where('invoices.date_fee_paid' => nil).where('orders.fee_actual > 0').uniq }
+
+  # Returns a string containing a brief, general description of this
   # class/model.
-  def Customer.class_description
-    return 'Customer represents a person with Requests and/or Orders for digitization.'
+  def self.class_description
+    'Customer represents a person with Requests and/or Orders for digitization.'
   end
 
   def external?
     # if the customer is Non-UVA (academic_status.id = 1)
-    if self.academic_status_id == 1 
+    if academic_status_id == 1
       return true
     else
       return false
@@ -87,7 +87,7 @@ class Customer < ActiveRecord::Base
   # the Customer record; it gets destroyed when the Customer is destroyed.)
   #
   # This method is public but is also called as a +before_destroy+ callback.
-  # def destroyable?  
+  # def destroyable?
   def destroyable?
     if orders? || requests?
       return false
@@ -95,17 +95,17 @@ class Customer < ActiveRecord::Base
       return true
     end
   end
-  
+
   # Returns a boolean value indicating whether this Customer has
   # associated Order records.
   def orders?
     return false unless orders.any?
   end
-   
+
   # Returns a boolean value indicating whether this Customer has
   # associated Request (unapproved Order) records.
   def requests?
-   return false unless requests.any?
+    return false unless requests.any?
   end
 
   def full_name
@@ -114,5 +114,4 @@ class Customer < ActiveRecord::Base
 
   alias_attribute :date_of_first_order, :created_at
   alias_attribute :name, :full_name
-
 end

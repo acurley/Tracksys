@@ -1,10 +1,9 @@
 class Tiff < MasterFile
   def say_hello
-    return "Hi! I am a #{self.type}"
+    "Hi! I am a #{type}"
   end
 
   def mime_type
-    "image/tiff"
+    'image/tiff'
   end
 end
-

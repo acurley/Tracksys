@@ -1,12 +1,11 @@
 class AutomationMessage < ActiveRecord::Base
-  
-  MESSAGE_TYPES = %w[error success failure info]
-  WORKFLOW_TYPES = %w[administrative archive delivery patron production qa repository unknown]
-  APPS = %w[tracksys]
+  MESSAGE_TYPES = %w(error success failure info)
+  WORKFLOW_TYPES = %w(administrative archive delivery patron production qa repository unknown)
+  APPS = %w(tracksys)
 
   WORKFLOW_TYPES_HASH = {
     'CreateDlManifestProcessor' => 'administrative',
-    'CreateStatsReportProcessor' => 'administrative', 
+    'CreateStatsReportProcessor' => 'administrative',
     'SendUnitToArchiveProcessor' => 'archive',
     'StartManualUploadToArchiveMigrationProcessor' => 'archive',
     'StartManualUploadToArchiveBatchMigrationProcessor' => 'archive',
@@ -79,23 +78,23 @@ class AutomationMessage < ActiveRecord::Base
     'CreateTextFromPdfProcessor' => 'production',
     'CreateTifImagesFromPdfProcessor' => 'production',
     'SendPdfUnitToFinalizationDirProcessor' => 'production',
-    'PurgeCacheProcessor' => 'administrative' 
+    'PurgeCacheProcessor' => 'administrative'
   }
-  belongs_to :messagable, :polymorphic => true, :counter_cache => true
+  belongs_to :messagable, polymorphic: true, counter_cache: true
 
-  validates :message, :app, :processor, :message_type, :workflow_type, :presence => true
-  validates :workflow_type, :inclusion => { :in => WORKFLOW_TYPES, 
-      :message => 'must be one of these values: ' + WORKFLOW_TYPES.join(", ")}
-  validates :message_type, :inclusion => { :in => MESSAGE_TYPES, 
-      :message => 'must be one of these values: ' + MESSAGE_TYPES.join(", ")}
-  validates :app, :inclusion => { :in => APPS, 
-      :message => 'must be one of these values: ' + APPS.join(", ")}
-  validates :messagable, :presence => true
+  validates :message, :app, :processor, :message_type, :workflow_type, presence: true
+  validates :workflow_type, inclusion: { in: WORKFLOW_TYPES,
+                                         message: 'must be one of these values: ' + WORKFLOW_TYPES.join(', ') }
+  validates :message_type, inclusion: { in: MESSAGE_TYPES,
+                                        message: 'must be one of these values: ' + MESSAGE_TYPES.join(', ') }
+  validates :app, inclusion: { in: APPS,
+                               message: 'must be one of these values: ' + APPS.join(', ') }
+  validates :messagable, presence: true
 
   before_save do
-    self.active_error = 0 if self.active_error.nil?
+    self.active_error = 0 if active_error.nil?
   end
- 
+
   scope :has_active_error, where('active_error = 1')
   scope :has_inactive_error, where('active_error = 0')
   scope :archive_workflow, where("workflow_type = 'archive'")
@@ -111,17 +110,17 @@ class AutomationMessage < ActiveRecord::Base
 
   # Returns a string containing a brief, general description of this
   # class/model.
-  def AutomationMessage.class_description
-    return 'Automation Message is a message sent during an automated process, saved to the database for later review by staff.'
+  def self.class_description
+    'Automation Message is a message sent during an automated process, saved to the database for later review by staff.'
   end
-  
+
   #------------------------------------------------------------------
   # public instance methods
   #------------------------------------------------------------------
-  
+
   # Formats +app+ value for display
   def app_display
-    return case app
+    case app
     when 'deligen'
       'Deliverables Generator'
     else
@@ -131,7 +130,7 @@ class AutomationMessage < ActiveRecord::Base
 
   # Formats +processor+ value for display
   def processor_display
-    processor.to_s.humanize_camelcase.sub(/Dl /,'DL ')
+    processor.to_s.humanize_camelcase.sub(/Dl /, 'DL ')
   end
 
   # # Choice of parent for an AutomationMessage object is variable.  Since an AutomationMessage object
@@ -145,7 +144,7 @@ class AutomationMessage < ActiveRecord::Base
   # # Component
   # def parent
   #   if self.master_file_id
-  #     return MasterFile.find(master_file_id) 
+  #     return MasterFile.find(master_file_id)
   #   elsif self.unit_id
   #     return Unit.find(unit_id)
   #   elsif self.order_id
@@ -161,10 +160,7 @@ class AutomationMessage < ActiveRecord::Base
   # value indicating the sender of the message
   def sender
     out = app_display
-    if app and processor
-      out += ', '
-    end
+    out += ', ' if app && processor
     out += processor_display
   end
 end
-  

@@ -12,9 +12,9 @@ class IndexDestination < ActiveRecord::Base
   #------------------------------------------------------------------
   # validations
   #------------------------------------------------------------------
-  validates :nickname, :hostname, :context, :port, :protocol, :presence => true
-  validates :protocol, :format => {:with => /^https?$/ }
- 
+  validates :nickname, :hostname, :context, :port, :protocol, presence: true
+  validates :protocol, format: { with: /^https?$/ }
+
   def url
     "#{protocol}://#{hostname}:#{port}/#{context}"
   end
