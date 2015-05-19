@@ -1,31 +1,31 @@
 ActiveAdmin.register AutomationMessage do
-  menu :priority => 8
+  menu priority: 8
   
-  actions :all, :except => [:new]
+  actions :all, except: [:new]
 
   batch_action :remove_active_error do |selection|
     AutomationMessage.find(selection).each {|s| s.update_attribute(:active_error, false)}
-    redirect_to :back, :alert => "Removed active error flag on #{selection.length} Automation Messages."
+    redirect_to :back, alert: "Removed active error flag on #{selection.length} Automation Messages."
   end
 
-  scope :all, :default => true, :show_count => false
+  scope :all, default: true, show_count: false
   scope "Active Error", :has_active_error
-  scope "Inactive Error", :has_inactive_error, :show_count => false
-  scope "Archive", :archive_workflow, :show_count => false
-  scope "QA", :qa_workflow, :show_count => false
-  scope "Delivery", :delivery_workflow, :show_count => false
-  scope "Patron", :patron_workflow, :show_count => false
-  scope "Production", :production_worklow, :show_count => false
-  scope "Repository", :repository_workflow, :show_count => false
+  scope "Inactive Error", :has_inactive_error, show_count: false
+  scope "Archive", :archive_workflow, show_count: false
+  scope "QA", :qa_workflow, show_count: false
+  scope "Delivery", :delivery_workflow, show_count: false
+  scope "Patron", :patron_workflow, show_count: false
+  scope "Production", :production_worklow, show_count: false
+  scope "Repository", :repository_workflow, show_count: false
 
   filter :id
-  filter :active_error, :as => :select, :input_html => {:class => 'chzn-select'}
-  filter :message_type, :as => :select, :collection => AutomationMessage::MESSAGE_TYPES.sort.map(&:titleize), :input_html => {:class => 'chzn-select'}
-  filter :processor, :as => :select, :collection => proc { AutomationMessage.select(:processor).order(:processor).uniq.map(&:processor)}, :input_html => {:class => 'chzn-select'}
-  filter :workflow_type, :as => :select, :collection => AutomationMessage::WORKFLOW_TYPES.sort.map(&:titleize), :input_html => {:class => 'chzn-select'}
-  filter :messagable_type, :as => :select, :collection => ['Bibl', 'MasterFile', 'Order', 'Unit'], :label => "Object", :input_html => {:class => 'chzn-select'}
-  filter :messagable_id, :as => :numeric, :label => "Object ID"
-  filter :created_at, :label => "Date"
+  filter :active_error, as: :select, input_html: {class: 'chzn-select'}
+  filter :message_type, as: :select, collection: AutomationMessage::MESSAGE_TYPES.sort.map(&:titleize), input_html: {class: 'chzn-select'}
+  filter :processor, as: :select, collection: proc { AutomationMessage.select(:processor).order(:processor).uniq.map(&:processor)}, input_html: {class: 'chzn-select'}
+  filter :workflow_type, as: :select, collection: AutomationMessage::WORKFLOW_TYPES.sort.map(&:titleize), input_html: {class: 'chzn-select'}
+  filter :messagable_type, as: :select, collection: ['Bibl', 'MasterFile', 'Order', 'Unit'], label: "Object", input_html: {class: 'chzn-select'}
+  filter :messagable_id, as: :numeric, label: "Object ID"
+  filter :created_at, label: "Date"
 
   index do
     selectable_column
@@ -49,23 +49,23 @@ ActiveAdmin.register AutomationMessage do
       format_boolean_as_yes_no(automation_message.active_error)
     end
     column :message do |automation_message|
-      truncate(automation_message.message, :length => 200)
+      truncate(automation_message.message, length: 200)
     end
     column ("Date") do |automation_message|
       format_datetime automation_message.created_at
     end
     column("") do |automation_message|
       div do
-        link_to "Details", resource_path(automation_message), :class => "member_link view_link"
+        link_to "Details", resource_path(automation_message), class: "member_link view_link"
       end
       div do
-        link_to I18n.t('active_admin.edit'), edit_resource_path(automation_message), :class => "member_link edit_link"
+        link_to I18n.t('active_admin.edit'), edit_resource_path(automation_message), class: "member_link edit_link"
       end
     end
   end
 
-  show :title => proc {|am| "Automation Message ##{am.id}"}do 
-    div :class => 'two-column' do
+  show title: proc {|am| "Automation Message ##{am.id}"}do 
+    div class: 'two-column' do
       panel "Details" do
         attributes_table_for automation_message do
           row :active_error do |automation_message|
@@ -88,7 +88,7 @@ ActiveAdmin.register AutomationMessage do
       end
     end
 
-    div :class => 'two-column' do
+    div class: 'two-column' do
       panel "Relationships" do
         attributes_table_for automation_message do
           row ("Attached to Object") do |automation_message|
@@ -102,7 +102,7 @@ ActiveAdmin.register AutomationMessage do
       end
     end
 
-    div :class => 'columns-none' do
+    div class: 'columns-none' do
       panel "Technical Information" do
         attributes_table_for automation_message do
           row :created_at
@@ -114,41 +114,41 @@ ActiveAdmin.register AutomationMessage do
   end
   
   form do |f|
-      if f.object.new_record? # New Record Logic
-       f.inputs "Details", :class => 'two-column panel' do
-        f.input :active_error, :as => :radio
-        f.input :workflow_type, :as => :select, :collection => AutomationMessage::WORKFLOW_TYPES, :input_html => {:class => 'chzn-select'}
-        f.input :processor, :collection => AutomationMessage.select(:processor).order(:processor).uniq.map(&:processor), :input_html => {:class => 'chzn-select'}
-        f.input :message_type, :collection => AutomationMessage::MESSAGE_TYPES, :input_html => {:class => 'chzn-select'}
-        f.input :app, :collection => AutomationMessage::APPS, :input_html => {:class => 'chzn-select'}
-        f.input :message, :as => :text, :input_html => { :rows => 10}
-      end
-      f.inputs "Relationships", :class => 'two-column panel' do
-        f.input :messagable_type, :as => :select 
-        f.input :messagable_id, :as => :string
-      end
+    if f.object.new_record? # New Record Logic
+      f.inputs "Details", class: 'two-column panel' d o
+       f.input :active_error, as: :radi o
+      f.input :workflow_type, as: :select, collection: AutomationMessage::WORKFLOW_TYPES, input_html: {class: 'chzn-select' }
+      f.input :processor, collection: AutomationMessage.select(:processor).order(:processor).uniq.map(&:processor), input_html: {class: 'chzn-select' }
+      f.input :message_type, collection: AutomationMessage::MESSAGE_TYPES, input_html: {class: 'chzn-select' }
+      f.input :app, collection: AutomationMessage::APPS, input_html: {class: 'chzn-select' }
+      f.input :message, as: :text, input_html: { rows: 10 }
+     end
+     f.inputs "Relationships", class: 'two-column panel' do
+       f.input :messagable_type, as: :select 
+       f.input :messagable_id, as: :string
+     end
     else  # Edit existing Record     
-      f.inputs "Details", :class => 'two-column panel' do
-        f.input :active_error, :as => :radio
-        f.input :workflow_type, :as => :select, :collection => AutomationMessage::WORKFLOW_TYPES, :input_html => {:class => 'chzn-select'}
-        f.input :processor, :input_html => { :disabled => true }
-        f.input :message_type, :input_html => { :disabled => true }
-        f.input :app, :input_html => { :disabled => true}
-        f.input :message, :as => :text, :input_html => { :rows => 10, :disabled => true }
-      end
-      f.inputs "Relationships", :class => 'two-column panel' do
-        f.input :pid, :as => :string, :input_html => { :disabled => true }
-        f.input :messagable_type, :as => :string, :input_html => { :disabled => true }
-        f.input :messagable_id, :as => :string, :input_html => { :disabled => true }
-      end
-      f.inputs "Technical Information", :class => 'columns-none panel' do
-        f.input :created_at, :as => :string, :input_html => { :disabled => true }
-        f.input :updated_at, :as => :string, :input_html => { :disabled => true }
-        f.input :backtrace, :input_html => { :disabled => true }
-      end
+      f.inputs "Details", class: 'two-column panel' d  o
+      f.input :active_error, as: :radi  o
+      f.input :workflow_type, as: :select, collection: AutomationMessage::WORKFLOW_TYPES, input_html: {class: 'chzn-select'  }
+      f.input :processor, input_html: { disabled: true   }
+      f.input :message_type, input_html: { disabled: true   }
+      f.input :app, input_html: { disabled: true  }
+      f.input :message, as: :text, input_html: { rows: 10, disabled: true   }
     end
-    f.inputs :class => 'columns-none' do
-      f.actions
+    f.inputs "Relationships", class: 'two-column panel' do
+      f.input :pid, as: :string, input_html: { disabled: true }
+      f.input :messagable_type, as: :string, input_html: { disabled: true }
+      f.input :messagable_id, as: :string, input_html: { disabled: true }
     end
+    f.inputs "Technical Information", class: 'columns-none panel' do
+      f.input :created_at, as: :string, input_html: { disabled: true }
+      f.input :updated_at, as: :string, input_html: { disabled: true }
+      f.input :backtrace, input_html: { disabled: true }
+    end
+  end
+      f.inputs class: 'columns-none' do
+        f.actions
+      end
   end
 end

@@ -1,6 +1,5 @@
 ActiveAdmin.register DvdDeliveryLocation do
-  menu :parent => "Miscellaneous"
+  menu parent: 'Miscellaneous'
 
-  scope :all, :default => true
-    
+  scope :all, default: true
 end

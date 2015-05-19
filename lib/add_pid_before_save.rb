@@ -1,9 +1,8 @@
 module AddPidBeforeSave
-  
   # Several classes of objects (Bibl, Component, MasterFile) all need PIDs, pulled from Fedora
   # at the time they are saved.  Since th
   def add_pid_before_save
-    if self.pid.blank?
+    if pid.blank?
       begin
         self.pid = AssignPids.get_pid
       rescue Exception => e
@@ -11,7 +10,6 @@ module AddPidBeforeSave
       end
     end
   end
-
 end
 
 ActiveRecord::Base.send(:include, AddPidBeforeSave)

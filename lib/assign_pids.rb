@@ -6,7 +6,6 @@
 # If a record already has an assigned PID, it is left unchanged; a new PID is
 # not requested.
 module AssignPids
-  
   # Updates Bibl records, and associated MasterFile and Component records as
   # appropriate, with PIDs obtained from an external PID-generating server.
   #
@@ -22,56 +21,56 @@ module AssignPids
     pid_count = 0
     bibls.each do |bibl|
       pid_count += 1 if bibl.pid.blank?  # one PID for Bibl record itself
-      
+
       bibl.units.each do |unit|
-        next if units_filter.is_a? Array and ! units_filter.include? unit
-        
+        next if units_filter.is_a? Array and !units_filter.include? unit
+
         unit.master_files.each do |master_file|
           pid_count += 1 if master_file.pid.blank?  # one PID for each associated MasterFile
         end
-        
+
         unit.components.each do |component|
           pid_count += 1 if component.pid.blank?  # one PID for each associated Component
         end
       end
     end
-    
+
     return nil if pid_count.zero?
-    
+
     pids = request_pids(pid_count, pid_namespace)
-    
+
     if pids.length < pid_count
-      raise "Unable to retrieve the number of PIDs needed for this operation"
+      fail 'Unable to retrieve the number of PIDs needed for this operation'
     end
-    
+
     # save pids to tracksys records as needed
     bibls.each do |bibl|
       bibl.pid = pids.shift if bibl.pid.blank?
       bibl.save!
-      
+
       bibl.units.each do |unit|
-        next if units_filter.is_a? Array and ! units_filter.include? unit
-        
+        next if units_filter.is_a? Array and !units_filter.include? unit
+
         unit.master_files.each do |master_file|
           master_file.pid = pids.shift if master_file.pid.blank?
           master_file.save!
         end
-        
+
         unit.components.each do |component|
           component.pid = pids.shift if component.pid.blank?
           component.save!
         end
       end
     end
-    
-    return nil
+
+    nil
   end
 
   #-----------------------------------------------------------------------------
 
   # Returns one PID
   def self.get_pid(pid_namespace = nil)
-    return request_pids(1, pid_namespace).first
+    request_pids(1, pid_namespace).first
   end
 
   #-----------------------------------------------------------------------------
@@ -79,8 +78,8 @@ module AssignPids
   # Requests PIDs from an external PID-generating server. Requests number of
   # PIDs passed. Returns array of string values.
   def self.request_pids(pid_count, pid_namespace = nil)
-    return Array.new if pid_count.to_i == 0
-    
+    return [] if pid_count.to_i == 0
+
     if pid_namespace.nil?
       if Rails.env == 'production'
         pid_namespace = 'uva-lib'
@@ -91,22 +90,21 @@ module AssignPids
         pid_namespace = 'test'
       end
     end
-    
+
     # Set up REST client
-    @resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
+    @resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
 
     url = "/objects/nextPID?numPIDs=#{pid_count}&namespace=#{pid_namespace}&format=xml"
-    xml = Nokogiri.XML(@resource[url].send :post, '', :content_type => 'text/xml')
-    
+    xml = Nokogiri.XML(@resource[url].send :post, '', content_type: 'text/xml')
+
     # Given that Fedora 3.6 returns an XML document with different namespacing than previous version of Fedora, we will need to test
     # for the presence of a namespace and act accordingly.
-    if xml.namespaces["xmlns"]
+    if xml.namespaces['xmlns']
       pids = xml.xpath('//xmlns:pid').map(&:content)
     else
       pids = xml.xpath('//pid').map(&:content)
     end
-  
-    return pids
-  end
 
+    pids
+  end
 end

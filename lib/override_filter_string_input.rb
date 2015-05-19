@@ -5,10 +5,10 @@ module ActiveAdmin
 
       def to_html
         input_wrapping do
-          [ label_html,
-            select_html,
-            " ",
-            input_html
+          [label_html,
+           select_html,
+           ' ',
+           input_html
           ].join("\n").html_safe
         end
       end
@@ -18,7 +18,7 @@ module ActiveAdmin
       end
 
       def input_html_options
-        { :size => 10, :id => "#{method}" }
+        { size: 10, id: "#{method}" }
       end
 
       def select_html
@@ -30,30 +30,30 @@ module ActiveAdmin
       end
 
       def select_html_options
-        { :onchange => "document.getElementById('#{method}').name = 'q[' + this.value + ']';" }
+        { onchange: "document.getElementById('#{method}').name = 'q[' + this.value + ']';" }
       end
 
       # Returns the scope for which we are currently searching. If no search is available
       # it returns the first scope
       def current_filter
-        filters[1..-1].inject(filters.first){|a,b| @object.send(b[1].to_sym) ? b : a }[1]
+        filters[1..-1].inject(filters.first) { |a, b| @object.send(b[1].to_sym) ? b : a }[1]
       end
 
       def filters
         (options[:filters] || default_filters).collect do |scope|
-          [scope[0], [method, scope[1]].join("_")]
+          [scope[0], [method, scope[1]].join('_')]
         end
       end
 
       def default_filters
-        [ ['contains', 'contains'],
-          ['not contains', 'does_not_contain'],
-          ['starts with', 'starts_with'],
-          ['not start with', 'does_not_start_with'],
-          ['ends with', 'ends_with'],
-          ['not end with', 'does_not_end_with'],
-          ['is empty', 'is_null'],
-          ['is not empty', 'is_not_null'] ]
+        [%w(contains contains),
+         ['not contains', 'does_not_contain'],
+         ['starts with', 'starts_with'],
+         ['not start with', 'does_not_start_with'],
+         ['ends with', 'ends_with'],
+         ['not end with', 'does_not_end_with'],
+         ['is empty', 'is_null'],
+         ['is not empty', 'is_not_null']]
       end
     end
   end

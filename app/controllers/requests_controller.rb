@@ -12,9 +12,7 @@ class RequestsController < ApplicationController
     #
     # Find existing Customer record by email address, or instantiate new one
     @customer = Customer.find_by_email(params[:request][:customer_attributes][:email].strip)
-    if @customer.nil?
-      @customer = Customer.new
-    end
+    @customer = Customer.new if @customer.nil?
 
     # Update that record (in memory, without saving it to database yet) with
     # values from user input
@@ -29,8 +27,8 @@ class RequestsController < ApplicationController
       Request.transaction do
         @request.customer = @customer
         @request.save!
-        @request.units.each {|unit|
-          unit.special_instructions = ""
+        @request.units.each do|unit|
+          unit.special_instructions = ''
           unit.special_instructions += "Pages to Digitize: #{unit.request_pages_to_digitize}\n" unless unit.request_pages_to_digitize.blank?
           unit.special_instructions += "Call Number: #{unit.request_call_number}\n" unless unit.request_call_number.blank?
           unit.special_instructions += "Title: #{unit.request_title}\n" unless unit.request_title.blank?
@@ -42,7 +40,7 @@ class RequestsController < ApplicationController
           unit.special_instructions += "Issue: #{unit.request_issue_number}\n" unless unit.request_issue_number.blank?
           unit.special_instructions += "Description: #{unit.request_description}\n" unless unit.request_description.blank?
           unit.save!
-        }
+        end
       end
 
     rescue ActiveRecord::RecordInvalid => invalid
@@ -51,7 +49,7 @@ class RequestsController < ApplicationController
 
       # Reconstitute billable address if nothing was filled in at first.
       @request.customer.build_billable_address if @request.customer.billable_address.nil?
-      render :action => 'new'
+      render action: 'new'
       return
     end
 
@@ -64,7 +62,7 @@ class RequestsController < ApplicationController
 
     # finish by passing the inherited_resources create method the redirect url with the appropriate request id.
     session[:request_id] = @request.id
-    create!{ thank_you_requests_url }
+    create! { thank_you_requests_url }
   end
 
   # Checks whether user has agreed to our terms/conditions for submitting a
@@ -81,10 +79,10 @@ class RequestsController < ApplicationController
           redirect_to public_requests_url
         end
       else
-        redirect_to requests_path, :notice => 'You must indicate whether or not you are affiliated with U.Va. to continue.'
+        redirect_to requests_path, notice: 'You must indicate whether or not you are affiliated with U.Va. to continue.'
       end
     else
-      redirect_to requests_path, :notice => 'You must agree to the terms and conditions to continue.'
+      redirect_to requests_path, notice: 'You must agree to the terms and conditions to continue.'
     end
   end
 
@@ -104,25 +102,25 @@ class RequestsController < ApplicationController
         ldap_info = UvaLdap.new(session[:computing_id])
         uva_status = ldap_info.uva_status.first
 
-	# If a UVa Customer exist, populate @request.customer with Tracksys sourced data.
+        # If a UVa Customer exist, populate @request.customer with Tracksys sourced data.
         customer_lookup = Customer.find_by_email(ldap_info.email.first)
         if customer_lookup.nil?
           uva_computing_id = ldap_info.uva_computing_id
           department_name = ldap_info.department.first
-        
+
           # Set values for customer pulled from LDAP
           @request.customer_attributes = {
-            :email => ldap_info.email.first,
-            :first_name => ldap_info.first_name.first,
-            :last_name => ldap_info.last_name.first,
-            :academic_status_id => AcademicStatus.find_by_name(uva_status).id,
-            :primary_address_attributes => {
-              :address_1 => ldap_info.address_1.first,
-              :address_2 => ldap_info.address_2.first,
-              :phone => ldap_info.phone  # no need to do first, since uva_ldap does not return an array for this value.
+            email: ldap_info.email.first,
+            first_name: ldap_info.first_name.first,
+            last_name: ldap_info.last_name.first,
+            academic_status_id: AcademicStatus.find_by_name(uva_status).id,
+            primary_address_attributes: {
+              address_1: ldap_info.address_1.first,
+              address_2: ldap_info.address_2.first,
+              phone: ldap_info.phone  # no need to do first, since uva_ldap does not return an array for this value.
             }
           }
-        else 
+        else
           @request.customer = Customer.find_by_email(ldap_info.email.first)
         end
 
@@ -131,7 +129,7 @@ class RequestsController < ApplicationController
 
         # Must build a Billable Address if the existing customer doesn't have one
         # so form pre-population doesn't break.
-        if not @request.customer.billable_address
+        unless @request.customer.billable_address
           @request.customer.build_billable_address
         end
       end
@@ -141,7 +139,7 @@ class RequestsController < ApplicationController
   # Reroute a non-UVA person to the new form
   def public
     session[:computing_id] = 'Non-UVA'
-    redirect_to :action => :new
+    redirect_to action: :new
   end
 
   def thank_you
@@ -156,17 +154,15 @@ class RequestsController < ApplicationController
     # Otherwise, get the user's UVa computing ID from the environment variable
     # set by NetBadge.
     session[:computing_id] = request.env['HTTP_REMOTE_USER'].to_s || 'aec6v'
-    redirect_to :action => :new
+    redirect_to action: :new
   end
 
-  private 
+  private
 
   def clean_input(thing)
     thing.attributes.each do |key, value|
-      if value.is_a? String
-        thing[key] = value.strip
-      end
+      thing[key] = value.strip if value.is_a? String
     end
-    return thing
+    thing
   end
 end

@@ -2,7 +2,7 @@
 # UVA LDAP server (see http://www.itc.virginia.edu/network/ldap.html)
 class UvaLdap
   require 'net/ldap'
-  
+
   # The user's University Computing ID. (LDAP: uid)
   attr_reader :uva_computing_id
   # The user's official surname from administrative records. (LDAP: sn)
@@ -31,30 +31,29 @@ class UvaLdap
   attr_reader :title
   # The department display name in which the user works or the primary school of attendance for students.
   attr_reader :department
-  
-  
+
   #------------------------------------------------------------------
   # public class methods
   #------------------------------------------------------------------
 
-  # Creates a new UvaLdap object after searching for someone's information by passing 
+  # Creates a new UvaLdap object after searching for someone's information by passing
   # his/her UVA Computing ID to this method.
   def initialize(computing_id)
     treebase = 'o=University of Virginia,c=US'
-  
+
     # Establish a connection to the UVA LDAP server
-    ldap = Net::LDAP.new(:host => 'ldap.virginia.edu')
-      
+    ldap = Net::LDAP.new(host: 'ldap.virginia.edu')
+
     # Set the search criteria to look for the computing id in LDAP.
     search_string = Net::LDAP::Filter.eq('uid', computing_id)
-    
+
     begin
-      #Search for the user and retrieve his/her information if found.
-      ldap.search(:base => treebase, :filter => search_string) do |entry|
+      # Search for the user and retrieve his/her information if found.
+      ldap.search(base: treebase, filter: search_string) do |entry|
         @uva_computing_id = entry.uid
         @last_name = entry.sn
         @first_name = entry.givenname
-        
+
         # Check one of two fields for an address.
         begin
           @address_1 = entry.physicaldeliveryofficename
@@ -65,14 +64,14 @@ class UvaLdap
             @address_1 = ''
           end
         end
-        
+
         # Check to see if a room number exists
         begin
           @address_2 = entry.roomnumber
         rescue
           @address_2 = ''
         end
-        
+
         # Check for the person's affiliation with the university.
         begin
           @uva_status = entry.affiliation
@@ -87,7 +86,7 @@ class UvaLdap
             end
           end
         end
-        
+
         # Take the first phone entry only unless it is empty. If not found then
         # check for a home or mobile number.
         begin
@@ -103,7 +102,7 @@ class UvaLdap
             end
           end
         end
-        
+
         # fax_number is populated by checking for an existing value in the officefax
         # or facsimiletelephonenumber LDAP fields.
         begin
@@ -115,7 +114,7 @@ class UvaLdap
             @fax = ''
           end
         end
-        
+
         # Check for an email address in one of the possible LDAP fields.
         begin
           @email = entry.mail
@@ -130,14 +129,14 @@ class UvaLdap
             end
           end
         end
-        
+
         # Get the employee's title if it exists
         begin
           @title = entry.title
         rescue
           @title = ''
         end
-        
+
         # Identify the person's department or school if it exists
         begin
           @department = entry.uvadisplaydepartment
@@ -164,17 +163,16 @@ class UvaLdap
       @department = ''
     end
   end
-  
-  
+
   #------------------------------------------------------------------
   # public instance methods
   #------------------------------------------------------------------
-  
+
   # Determines if the existing LDAP record has all empty/nil field values, i.e. the user was not found in LDAP
   def empty?
-    if ((self.uva_computing_id == nil) and (self.last_name == nil) and (self.first_name == nil) and 
-        (self.address_1 == nil) and (self.address_2 == nil) and (self.uva_status == nil) and (self.phone == nil) and
-        (self.fax == nil) and (self.email == nil) and (self.title == nil) and (self.department == nil))
+    if (uva_computing_id.nil?) && (last_name.nil?) && (first_name.nil?) &&
+       (address_1.nil?) && (address_2.nil?) && (uva_status.nil?) && (phone.nil?) &&
+       (fax.nil?) && (email.nil?) && (title.nil?) && (department.nil?)
       return true
     else
       return false

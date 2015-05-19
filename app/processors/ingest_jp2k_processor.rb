@@ -1,24 +1,23 @@
 class IngestJp2kProcessor < ApplicationProcessor
-
   require 'fedora'
   require 'hydra'
 
-  subscribes_to :ingest_jp2k, {:ack=>'client', 'activemq.prefetchSize' => 1}
-#  publishes_to :update_rels_ext_with_indexer_content_model
+  subscribes_to :ingest_jp2k, :ack => 'client', 'activemq.prefetchSize' => 1
+  #  publishes_to :update_rels_ext_with_indexer_content_model
   publishes_to :delete_unit_copy_for_deliverable_generation
-  publishes_to :update_unit_date_dl_deliverables_ready  
+  publishes_to :update_unit_date_dl_deliverables_ready
 
-  def on_message(message)  
-    logger.debug "Ingest JP2K Processor received: " + message
-    
+  def on_message(message)
+    logger.debug 'Ingest JP2K Processor received: ' + message
+
     # decode JSON message into Ruby hash
     hash = ActiveSupport::JSON.decode(message).symbolize_keys
 
-    raise "Parameter 'last' is required" if hash[:last].blank?
-    raise "Parameter 'source' is required" if hash[:source].blank?
-    raise "Parameter 'object_class' is required" if hash[:object_class].blank?
-    raise "Parameter 'object_id' is required" if hash[:object_id].blank?
-    raise "Parameter 'jp2k_path' is required" if hash[:jp2k_path].blank?
+    fail "Parameter 'last' is required" if hash[:last].blank?
+    fail "Parameter 'source' is required" if hash[:source].blank?
+    fail "Parameter 'object_class' is required" if hash[:object_class].blank?
+    fail "Parameter 'object_id' is required" if hash[:object_id].blank?
+    fail "Parameter 'jp2k_path' is required" if hash[:jp2k_path].blank?
 
     @object_class = hash[:object_class]
     @object_id = hash[:object_id]
@@ -31,16 +30,16 @@ class IngestJp2kProcessor < ApplicationProcessor
 
     @pid = @object.pid
     instance_variable_set("@#{@object.class.to_s.underscore}_id", @object_id)
-        
+
     # Read jp2 file from disk
     file = File.read(@jp2k_path)
-    
-    if ! @object.exists_in_repo?
+
+    unless @object.exists_in_repo?
       logger.error "ERROR: Object #{@pid} not found in #{FEDORA_REST_URL}"
       Fedora.create_or_update_object(@object, @object.title.to_s)
-    end 
-    Fedora.add_or_update_datastream(file, @pid, 'content', 'JPEG-2000 Binary', :controlGroup => 'M', :versionable => "false", :mimeType => "image/jp2")
-    
+    end
+    Fedora.add_or_update_datastream(file, @pid, 'content', 'JPEG-2000 Binary', controlGroup: 'M', versionable: 'false', mimeType: 'image/jp2')
+
     # Delete jp2 file from disk
     File.delete(@jp2k_path)
 
@@ -49,15 +48,15 @@ class IngestJp2kProcessor < ApplicationProcessor
     if hash[:last] == 1
       # Delete the instance variable so the following success and error messages only get posted to the Unit and not the MasterFile
       instance_variable_set("@#{@object.class.to_s.underscore}_id", nil)
-      
-      @unit_id = @object.unit.id     
-      message = ActiveSupport::JSON.encode({ :unit_id => @unit_id })
-#      publish :update_rels_ext_with_indexer_content_model, message
+
+      @unit_id = @object.unit.id
+      message = ActiveSupport::JSON.encode(unit_id: @unit_id)
+      #      publish :update_rels_ext_with_indexer_content_model, message
       publish :update_unit_date_dl_deliverables_ready, message
       on_success "Last JP2K for Unit #{@unit_id} created."
 
-      if @source.match("#{FINALIZATION_DIR_MIGRATION}") or @source.match("#{FINALIZATION_DIR_PRODUCTION}")
-        message = ActiveSupport::JSON.encode({ :unit_id => @unit_id, :mode => 'dl'})
+      if @source.match("#{FINALIZATION_DIR_MIGRATION}") || @source.match("#{FINALIZATION_DIR_PRODUCTION}")
+        message = ActiveSupport::JSON.encode(unit_id: @unit_id, mode: 'dl')
         publish :delete_unit_copy_for_deliverable_generation, message
       end
     end

@@ -1,6 +1,6 @@
 class UpgradeUnits < ActiveRecord::Migration
   def change
-    change_table(:units, :bulk => true) do |t|
+    change_table(:units, bulk: true) do |t|
       t.remove :fasttrack
       t.remove :vendor_batch_id
       t.remove :content_model_id
@@ -13,15 +13,15 @@ class UpgradeUnits < ActiveRecord::Migration
       t.remove :date_cataloging_notification_sent
       t.remove :priority
       t.integer :availability_policy_id
-      t.integer :master_files_count, :default => 0
-      t.integer :automation_messages_count, :default => 0
+      t.integer :master_files_count, default: 0
+      t.integer :automation_messages_count, default: 0
       t.rename :discoverability, :master_file_discoverability
       t.change :bibl_id, :integer
       t.rename :url, :patron_source_url
-      t.remove_index :name => 'archive_id'
-      t.remove_index :name => 'heard_about_resource_id'
-      t.remove_index :name => 'indexing_scenario_id'
-      t.remove_index :name => 'use_right_id'
+      t.remove_index name: 'archive_id'
+      t.remove_index name: 'heard_about_resource_id'
+      t.remove_index name: 'indexing_scenario_id'
+      t.remove_index name: 'use_right_id'
       t.index :archive_id
       t.index :indexing_scenario_id
       t.index :use_right_id

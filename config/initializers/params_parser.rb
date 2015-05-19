@@ -10,5 +10,5 @@
 #           request.content_mime_type || Mime::XML if env["HTTP_USER_AGENT"] =~ /Oxygen/ && env["REQUEST_METHOD"] == "PUT"
 #     super if defined?(super)
 #   end
-  
+
 # end

@@ -9,7 +9,7 @@ Tracksys::Application.configure do
 
   # Configure static asset server for tests with Cache-Control for performance
   config.serve_static_assets = true
-  config.static_cache_control = "public, max-age=3600"
+  config.static_cache_control = 'public, max-age=3600'
 
   # Log error messages when you accidentally call methods on nil
   config.whiny_nils = true
@@ -45,15 +45,15 @@ Tracksys::Application.configure do
   #  Fedora_username = 'fedoraAdmin'
   #  Fedora_password = 'fedoraAdmin'
   FEDORA_REST_URL = 'http://localhost:8080/fedora'
-  SOLR_URL = "http://localhost:8983/solr/staging_solr"
+  SOLR_URL = 'http://localhost:8983/solr/staging_solr'
   Fedora_username = 'fedoraAdmin'
   Fedora_password = 'fedoraAdmin'
-  
+
   # TRACKSYS_URL = "http://tracksysdev.lib.virginia.edu/"
   #  TRACKSYS_URL_METADATA = "http://tracksysdev.lib.virginia.edu/metadata"
   #  DELIVERY_DIR = "/digiserv-delivery-test"
   #  TEI_ACCESS_URL = "http://xtf.lib.virginia.edu/xtf/view"
-  
+
   # Set the number of threads dedicated to JP2K creation.
   #  NUM_JP2K_THREADS = 1
 end

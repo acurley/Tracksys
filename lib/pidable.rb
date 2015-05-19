@@ -5,12 +5,12 @@ module Pidable
   require 'activemessaging/processor'
   include ActiveMessaging::MessageSender
   publishes_to :update_fedora_datastreams
-   
+
   def get_object_label
-    resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
-    
-    url = "/objects/#{self.pid}?format=xml"
-  
+    resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
+
+    url = "/objects/#{pid}?format=xml"
+
     begin
       response = resource[url].get
       xml = Nokogiri.XML(response)
@@ -18,58 +18,58 @@ module Pidable
     rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
       return false
     end
-    return object_label
+    object_label
   end
 
   def get_datastreams_dsID
-   # Set up REST client
-    resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
-    dsIDs = Array.new
+    # Set up REST client
+    resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
+    dsIDs = []
 
-    url = "/objects/#{self.pid}/datastreams?format=xml"
+    url = "/objects/#{pid}/datastreams?format=xml"
     begin
       response = resource[url].get
       xml = Nokogiri.XML(response)
-      xml.xpath('//fedora:objectDatastreams/fedora:datastream/@dsid', 'fedora' => 'http://www.fedora.info/definitions/1/0/access/').each {|dsID|
+      xml.xpath('//fedora:objectDatastreams/fedora:datastream/@dsid', 'fedora' => 'http://www.fedora.info/definitions/1/0/access/').each do|dsID|
         dsIDs.push(dsID.to_s)
-      }
+      end
     rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
       return false
     end
-    return dsID
+    dsID
   end
 
   def get_datastreams_label
-   # Set up REST client
-    resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
-    labels = Array.new
+    # Set up REST client
+    resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
+    labels = []
 
-    url = "/objects/#{self.pid}/datastreams?format=xml"
+    url = "/objects/#{pid}/datastreams?format=xml"
     begin
       response = resource[url].get
       xml = Nokogiri.XML(response)
-      xml.xpath('//fedora:objectDatastreams/fedora:datastream/@label', 'fedora' => 'http://www.fedora.info/definitions/1/0/access/').each {|label|
+      xml.xpath('//fedora:objectDatastreams/fedora:datastream/@label', 'fedora' => 'http://www.fedora.info/definitions/1/0/access/').each do|label|
         labels.push(label.to_s)
-      }
+      end
     rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
       return false
     end
-    return labels
+    labels
   end
 
   # Returns a boolean indicating whether a datastream for a piddable object
   # exists in the Fedora repo
   def datastream_exists?(dsID)
     # Set up REST client
-    resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
+    resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
 
-    url = "/objects/#{self.pid}/datastreams/#{dsID}?format=xml"
+    url = "/objects/#{pid}/datastreams/#{dsID}?format=xml"
     begin
       response = resource[url].get
     rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
       return false
     end
-    return true
+    true
   end
 
   # Query a given Solr index to determine if object's index record is found there.  A default Solr index is used
@@ -79,7 +79,7 @@ module Pidable
     if pid.nil?
       return false
     else
-      @solr_connection = Solr::Connection.new("#{solr_url}", :autocommit => :off)
+      @solr_connection = Solr::Connection.new("#{solr_url}", autocommit: :off)
 
       begin
         hits = @solr_connection.query("id:#{pid.gsub(/:/, '?')}").hits
@@ -94,7 +94,7 @@ module Pidable
   # Returns a boolean indicating whether an object with the same PID as this
   # one exists in the Fedora repo
   def exists_in_repo?
-    if ! self.respond_to?(:pid)
+    if !self.respond_to?(:pid)
       return false
     elsif pid.nil?
       return false
@@ -103,9 +103,9 @@ module Pidable
       # * If Fedora finds the object, no exception occurs
       # * If Fedora can't find the object, RestClient::ResourceNotFound exception occurs
       # * If any other exception occurs, it remains unhandled and gets raised
-      resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
+      resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
       url = "/objects?query=pid%3D#{pid}&resultFormat=xml&pid=true"
- 
+
       begin
         response = resource[url].get
       rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
@@ -119,7 +119,7 @@ module Pidable
     if pid.nil?
       return false
     else
-      resource = RestClient::Resource.new FEDORA_REST_URL, :user => Fedora_username, :password => Fedora_password
+      resource = RestClient::Resource.new FEDORA_REST_URL, user: Fedora_username, password: Fedora_password
       url = "/objects/#{pid}"
 
       begin
@@ -136,31 +136,30 @@ module Pidable
     if pid.nil?
       return false
     else
-      @solr_connection = Solr::Connection.new("#{solr_url}", :autocommit => :off)
+      @solr_connection = Solr::Connection.new("#{solr_url}", autocommit: :off)
 
       begin
         @solr_connection.delete(pid)
       rescue RestClient::ResourceNotFound, RestClient::InternalServerError, RestClient::RequestTimeout
         return false
       end
-      return true 
+      return true
     end
-
   end
 
   # Methods for ingest and Fedora management workflows
   def update_metadata(datastream)
-    message = ActiveSupport::JSON.encode( { :object_class => self.class.to_s, :object_id => self.id, :datastream => datastream })
+    message = ActiveSupport::JSON.encode(object_class: self.class.to_s, object_id: id, datastream: datastream)
     publish :update_fedora_datastreams, message
     # flash[:notice] = "#{params[:datastream].gsub(/_/, ' ').capitalize} datastream(s) being updated."
     # redirect_to :action => "show", :controller => "bibl", :id => params[:object_id]
   end
 
   def fedora_url
-    return "#{FEDORA_REST_URL}/objects/#{self.pid}"
+    "#{FEDORA_REST_URL}/objects/#{pid}"
   end
 
-  def solr_url(url=SOLR_URL)
-    return "#{url}/select?q=id:\"#{self.pid}\""
+  def solr_url(url = SOLR_URL)
+    "#{url}/select?q=id:\"#{pid}\""
   end
 end

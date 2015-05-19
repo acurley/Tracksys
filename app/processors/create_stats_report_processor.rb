@@ -1,17 +1,16 @@
 class CreateStatsReportProcessor < ApplicationProcessor
+  # Written by: Andrew Curley (aec6v@virginia.edu) and Greg Murray (gpm2a@virginia.edu)
+  # Written: January - March 2010
 
-# Written by: Andrew Curley (aec6v@virginia.edu) and Greg Murray (gpm2a@virginia.edu)
-# Written: January - March 2010
+  require 'spreadsheet'
+  subscribes_to :create_stats_report, :ack => 'client', 'activemq.prefetchSize' => 1
 
-  require 'spreadsheet'  
-  subscribes_to :create_stats_report, {:ack=>'client', 'activemq.prefetchSize' => 1}
-  
-  def on_message(message)  
-    logger.debug "CreateStastsReportProcessor received: " + message
- 
+  def on_message(message)
+    logger.debug 'CreateStastsReportProcessor received: ' + message
+
     hash = ActiveSupport::JSON.decode(message).symbolize_keys
     @messagable_id = 2
-    @messagable_type = "StaffMember"
+    @messagable_type = 'StaffMember'
     @workflow_type = AutomationMessage::WORKFLOW_TYPES_HASH.fetch(self.class.name.demodulize)
 
     today = Date.today
@@ -25,8 +24,8 @@ class CreateStatsReportProcessor < ApplicationProcessor
 
     # Create workbook and specify formatting
     book = Spreadsheet::Workbook.new
-    heading_format = Spreadsheet::Format.new(:weight => :bold, :size => 16, :align => :merge) 
-    sub_heading_format = Spreadsheet::Format.new(:italic => 1)
+    heading_format = Spreadsheet::Format.new(weight: :bold, size: 16, align: :merge)
+    sub_heading_format = Spreadsheet::Format.new(italic: 1)
 
     ######################################
     # Sheet 1
@@ -43,12 +42,12 @@ class CreateStatsReportProcessor < ApplicationProcessor
     orders_submitted_heading_row[1] = "Orders Submitted #{query_year}"
     row_number += 1
 
-    sheet1.row(row_number).replace [ 'Category', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter', 'Year-To-Date']
+    sheet1.row(row_number).replace ['Category', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter', 'Year-To-Date']
     sheet1.row(row_number).set_format(i, sub_heading_format)
     row_number += 1
 
     # Submitted orders broken down by Academic Status
-    AcademicStatus.order(:name).each {|status|
+    AcademicStatus.order(:name).each do|status|
       sheet1.row(row_number).push "#{status.name}"
       # monthly orders submitted
       for i in 1..12 do
@@ -61,10 +60,10 @@ class CreateStatsReportProcessor < ApplicationProcessor
       sheet1.row(row_number).push status.orders.where("date_request_submitted between '#{query_year}-10-01' and '#{query_year}-12-31'").count
       sheet1.row(row_number).push status.orders.where("date_request_submitted between '#{query_year}-01-01' and '#{query_year}-12-31'").count
       row_number += 1
-    }
-    
+    end
+
     # Totalling orders submitted
-    sheet1.row(row_number).push "Total"
+    sheet1.row(row_number).push 'Total'
     for i in 1..12 do
       sheet1.row(row_number).push Order.where("date_request_submitted between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
     end
@@ -79,16 +78,16 @@ class CreateStatsReportProcessor < ApplicationProcessor
     orders_delivered_heading_row = sheet1.row(row_number)
     for i in 1..17 do
       orders_delivered_heading_row.set_format(i, heading_format)
-    end  
+    end
     orders_delivered_heading_row[1] = "Orders Delivered #{query_year}"
     row_number += 1
 
-    sheet1.row(row_number).replace [ 'Category', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter', 'Year-To-Date']
+    sheet1.row(row_number).replace ['Category', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter', 'Year-To-Date']
     sheet1.row(row_number).set_format(i, sub_heading_format)
     row_number += 1
 
     # Delivered Orders broken down by Academic Status
-    AcademicStatus.order(:name).each {|status|
+    AcademicStatus.order(:name).each do|status|
       sheet1.row(row_number).push "#{status.name}"
       # monthly orders submitted
       for i in 1..12 do
@@ -101,10 +100,10 @@ class CreateStatsReportProcessor < ApplicationProcessor
       sheet1.row(row_number).push status.orders.where("date_customer_notified between '#{query_year}-10-01' and '#{query_year}-12-31'").count
       sheet1.row(row_number).push status.orders.where("date_customer_notified between '#{query_year}-01-01' and '#{query_year}-12-31'").count
       row_number += 1
-    }
-    
+    end
+
     # Totalling orders submitted
-    sheet1.row(row_number).push "Total"
+    sheet1.row(row_number).push 'Total'
     for i in 1..12 do
       sheet1.row(row_number).push Order.where("date_customer_notified between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
     end
@@ -113,7 +112,6 @@ class CreateStatsReportProcessor < ApplicationProcessor
     sheet1.row(row_number).push Order.where("date_customer_notified between '#{query_year}-07-01' and '#{query_year}-09-30'").count
     sheet1.row(row_number).push Order.where("date_customer_notified between '#{query_year}-10-01' and '#{query_year}-12-31'").count
     sheet1.row(row_number).push Order.where("date_customer_notified between '#{query_year}-01-01' and '#{query_year}-12-31'").count
-   
 
     ####################################
     # Sheet2
@@ -128,7 +126,7 @@ class CreateStatsReportProcessor < ApplicationProcessor
     orders_and_units_heading_row[1] = "Orders and Units Data - #{query_year}"
 
     # Sheet2 Sub-headings
-    sheet2.row(1).replace [ 'Statistic', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Year-To-Date', 'Average per month']
+    sheet2.row(1).replace ['Statistic', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Year-To-Date', 'Average per month']
 
     for i in 0..15 do
       sheet2.row(1).set_format(i, sub_heading_format)
@@ -148,8 +146,8 @@ class CreateStatsReportProcessor < ApplicationProcessor
     for i in 1..12 do
       # Total size of master files is for all units, so the emtpy integer variable can be decleared up front
       size_of_master_files_archived_month = 0
-      
-      # Orders Submitted 
+
+      # Orders Submitted
       number_of_orders_submitted_month = Order.where("date_request_submitted between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
 
       # Orders Delivered
@@ -183,7 +181,7 @@ class CreateStatsReportProcessor < ApplicationProcessor
       sheet2.row(6).push number_of_orders_canceled_month
       sheet2.row(7).push number_of_units_archived_month
       sheet2.row(8).push number_of_master_files_archived_month
-      sheet2.row(9).push size_of_master_files_archived_month / 1024000000 # convert the size from bytes to gigabytes
+      sheet2.row(9).push size_of_master_files_archived_month / 1_024_000_000 # convert the size from bytes to gigabytes
       sheet2.row(10).push number_of_units_delivered_to_dl_month
       sheet2.row(11).push number_of_master_files_delivered_to_dl_month
     end
@@ -196,11 +194,11 @@ class CreateStatsReportProcessor < ApplicationProcessor
     number_of_orders_canceled_year_to_date = Order.where("date_canceled between '#{query_year}-01-01' and '#{query_year}-12-31'").count
     number_of_units_archived_year_to_date = Unit.where("date_archived between '#{query_year}-01-01' and '#{query_year}-12-31'").count
     number_of_master_files_archived_year_to_date = MasterFile.where("`master_files`.date_archived between '#{query_year}-01-01' and '#{query_year}-12-31'").count
-    
+
     if number_of_master_files_archived_year_to_date
       size_of_master_files_archived_year_to_date = MasterFile.where("`master_files`.date_archived between '#{query_year}-01-01' and '#{query_year}-12-31'").map(&:filesize).inject(:+)
     end
-    
+
     number_of_units_delivered_to_dl_year_to_date = Unit.where("date_dl_deliverables_ready between '#{query_year}-01-01' and '#{query_year}-12-31'").count
     number_of_master_files_delivered_to_dl_year_to_date = MasterFile.where("date_dl_ingest between '#{query_year}-01-01' and '#{query_year}-12-31'").count
 
@@ -211,7 +209,7 @@ class CreateStatsReportProcessor < ApplicationProcessor
     sheet2.row(6).push number_of_orders_canceled_year_to_date, number_of_orders_canceled_year_to_date / query_month
     sheet2.row(7).push number_of_units_archived_year_to_date, number_of_units_archived_year_to_date / query_month
     sheet2.row(8).push number_of_master_files_archived_year_to_date, number_of_master_files_archived_year_to_date / query_month
-    sheet2.row(9).push size_of_master_files_archived_year_to_date / 1024000000, (size_of_master_files_archived_year_to_date / 1024000000) / query_month
+    sheet2.row(9).push size_of_master_files_archived_year_to_date / 1_024_000_000, (size_of_master_files_archived_year_to_date / 1_024_000_000) / query_month
     sheet2.row(10).push number_of_units_delivered_to_dl_year_to_date, number_of_units_delivered_to_dl_year_to_date / query_month
     sheet2.row(11).push number_of_master_files_delivered_to_dl_year_to_date, number_of_master_files_delivered_to_dl_year_to_date / query_month
 
@@ -221,14 +219,14 @@ class CreateStatsReportProcessor < ApplicationProcessor
     sheet3 = book.create_worksheet
     sheet3.name = 'By Agency (Monthly Data)'
 
-    agency_month_heading_text = "Agency Orders By Month"
+    agency_month_heading_text = 'Agency Orders By Month'
     agency_month_heading_row = sheet3.row(0)
     for j in 0..10 do
       agency_month_heading_row.set_format(j, heading_format)
     end
     agency_month_heading_row[0] = agency_month_heading_text
 
-    sheet3_i = 1 #Start on row 1
+    sheet3_i = 1 # Start on row 1
 
     for i in 1..12 do
       month_text = "#{i}/#{query_year}"
@@ -243,13 +241,13 @@ class CreateStatsReportProcessor < ApplicationProcessor
       sheet3_i = sheet3_i.next
 
       # Sheet3 Sub-headings
-      sheet3.row(sheet3_i).replace [ 'Agencies', 'Orders Submitted', 'Orders Deferred', 'Orders Approved', 'Orders Canceled', 'Orders Archived', 'Orders Delivered', 'Units Delivered', 'Master Files Delivered', 'Units Archived', 'Master Files Archived' ]
+      sheet3.row(sheet3_i).replace ['Agencies', 'Orders Submitted', 'Orders Deferred', 'Orders Approved', 'Orders Canceled', 'Orders Archived', 'Orders Delivered', 'Units Delivered', 'Master Files Delivered', 'Units Archived', 'Master Files Archived']
       for k in 0..10 do
         sheet3.row(sheet3_i).set_format(k, sub_heading_format)
-      end 
+      end
       sheet3_i += 1
 
-      Agency.order(:name).each {|agency|
+      Agency.order(:name).each do|agency|
         number_of_agency_orders_submitted_month = agency.orders.where("date_request_submitted between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
         number_of_agency_orders_deferred_month = agency.orders.where("date_deferred between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
         number_of_agency_orders_approved_month = agency.orders.where("date_order_approved between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
@@ -261,12 +259,12 @@ class CreateStatsReportProcessor < ApplicationProcessor
         number_of_agency_master_files_archived_month = agency.master_files.where("`master_files`.date_archived between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
         number_of_agency_master_files_delivered_month = agency.master_files.joins(:order).where("`orders`.date_customer_notified between '#{query_year}-#{i}-01' and '#{query_year}-#{i}-31'").count
 
-        if number_of_agency_orders_submitted_month == 0 and number_of_agency_orders_deferred_month == 0 and number_of_agency_orders_approved_month == 0 and number_of_agency_orders_canceled_month == 0 and number_of_agency_orders_archived_month == 0 and number_of_agency_orders_delivered_month == 0 and number_of_agency_units_delivered_month == 0 and number_of_agency_units_archived_month == 0 and number_of_agency_master_files_archived_month == 0 and number_of_agency_master_files_delivered_month == 0
-        else       
+        if number_of_agency_orders_submitted_month == 0 && number_of_agency_orders_deferred_month == 0 && number_of_agency_orders_approved_month == 0 && number_of_agency_orders_canceled_month == 0 && number_of_agency_orders_archived_month == 0 && number_of_agency_orders_delivered_month == 0 && number_of_agency_units_delivered_month == 0 && number_of_agency_units_archived_month == 0 && number_of_agency_master_files_archived_month == 0 && number_of_agency_master_files_delivered_month == 0
+        else
           sheet3.row(sheet3_i).push agency.name, number_of_agency_orders_submitted_month, number_of_agency_orders_deferred_month, number_of_agency_orders_approved_month, number_of_agency_orders_canceled_month, number_of_agency_orders_archived_month, number_of_agency_orders_delivered_month, number_of_agency_units_delivered_month, number_of_agency_master_files_delivered_month, number_of_agency_units_archived_month, number_of_agency_master_files_archived_month
           sheet3_i = sheet3_i.next
         end
-      }
+      end
 
       sheet3_i += 1
     end
@@ -284,15 +282,15 @@ class CreateStatsReportProcessor < ApplicationProcessor
     end
     agency_year_heading_row[0] = agency_year_heading_text
 
-    sheet4_i = 2 #Start on row 2
+    sheet4_i = 2 # Start on row 2
 
     # Sheet4 Sub-headings
-    sheet4.row(1).replace [ 'Agencies', 'Orders in Process', 'Orders Submitted', 'Orders Deferred', 'Orders Approved', 'Orders Canceled', 'Orders Archived', 'Orders Delivered', 'Units Delivered', 'Master Files Delivered', 'Units Archived', 'Master Files Archived' ]
+    sheet4.row(1).replace ['Agencies', 'Orders in Process', 'Orders Submitted', 'Orders Deferred', 'Orders Approved', 'Orders Canceled', 'Orders Archived', 'Orders Delivered', 'Units Delivered', 'Master Files Delivered', 'Units Archived', 'Master Files Archived']
     for i in 0..11 do
       sheet4.row(1).set_format(i, sub_heading_format)
     end
 
-    Agency.order(:name).each {|agency|
+    Agency.order(:name).each do|agency|
       number_of_agency_orders_currently_in_process = agency.orders.in_process.count
       number_of_agency_orders_submitted_year = agency.orders.where("date_request_submitted between '#{query_year}-01-01' and '#{query_year}-12-31'").count
       number_of_agency_orders_deferred_year = agency.orders.where("date_deferred between '#{query_year}-01-01' and '#{query_year}-12-31'").count
@@ -305,12 +303,12 @@ class CreateStatsReportProcessor < ApplicationProcessor
       number_of_agency_master_files_archived_year = agency.master_files.where("`master_files`.date_archived between '#{query_year}-01-01' and '#{query_year}-12-31'").count
       number_of_agency_master_files_delivered_year = agency.master_files.joins(:order).where("`orders`.date_customer_notified between '#{query_year}-01-01' and '#{query_year}-12-31'").count
 
-      if number_of_agency_orders_currently_in_process == 0 and number_of_agency_orders_submitted_year == 0 and number_of_agency_orders_deferred_year == 0 and number_of_agency_orders_approved_year == 0 and number_of_agency_orders_canceled_year == 0 and number_of_agency_orders_archived_year == 0 and number_of_agency_orders_delivered_year == 0 and number_of_agency_units_delivered_year == 0 and number_of_agency_units_archived_year == 0 and number_of_agency_master_files_archived_year == 0 and number_of_agency_master_files_delivered_year == 0
-      else  
+      if number_of_agency_orders_currently_in_process == 0 && number_of_agency_orders_submitted_year == 0 && number_of_agency_orders_deferred_year == 0 && number_of_agency_orders_approved_year == 0 && number_of_agency_orders_canceled_year == 0 && number_of_agency_orders_archived_year == 0 && number_of_agency_orders_delivered_year == 0 && number_of_agency_units_delivered_year == 0 && number_of_agency_units_archived_year == 0 && number_of_agency_master_files_archived_year == 0 && number_of_agency_master_files_delivered_year == 0
+      else
         sheet4.row(sheet4_i).push agency.name, number_of_agency_orders_currently_in_process, number_of_agency_orders_submitted_year, number_of_agency_orders_deferred_year, number_of_agency_orders_approved_year, number_of_agency_orders_canceled_year, number_of_agency_orders_archived_year, number_of_agency_orders_delivered_year, number_of_agency_units_delivered_year, number_of_agency_master_files_delivered_year, number_of_agency_units_archived_year, number_of_agency_master_files_archived_year
         sheet4_i = sheet4_i.next
       end
-    }
+    end
 
     ####################################
     # Sheet 5 (Current Orders)
@@ -321,26 +319,25 @@ class CreateStatsReportProcessor < ApplicationProcessor
     sheet5.row(0).replace ['Status', "Total as of #{today.month}/#{today.day}/#{today.year}"]
     for i in 0..1 do
       sheet5.row(0).set_format(i, sub_heading_format)
-    end 
+    end
 
     sheet5.row(1).push 'Orders Currently in Process', Order.in_process.count
     sheet5.row(2).push 'Orders Currently Pending Approval', Order.awaiting_approval.count
     sheet5.row(3).push 'Orders Currently Deferred', Order.deferred.count
 
     # Let's do some formatting!
-    # Some templates 
-    format = Spreadsheet::Format.new :horizontal_align => :center
+    # Some templates
+    format = Spreadsheet::Format.new horizontal_align: :center
 
     # Sheet 1
     sheet1.row(0).default_format = format
     sheet1.row(1).default_format = format
     sheet1.row(11).default_format = format
-   
+
     # Save the entire workbook
     t = DateTime.now
     filename = "#{query_year}_Report_#{t.year}-#{t.month}-#{t.day}-#{t.hour}-#{t.min}-#{t.sec}"
     book.write "/digiserv-production/administrative/stats_reports/#{filename}.xls"
-    on_success "Stats reported created."
-
+    on_success 'Stats reported created.'
   end
 end

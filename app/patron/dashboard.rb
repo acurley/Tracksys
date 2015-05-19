@@ -1,46 +1,46 @@
-ActiveAdmin.register_page "Dashboard", :namespace => :patron do
-  menu :priority => 1
+ActiveAdmin.register_page 'Dashboard', namespace: :patron do
+  menu priority: 1
 
   content do
-    div :class => 'two-column' do
-      panel "Order Processing", :namespace => :patron, :priority => 1, :width => '50%' do
+    div class: 'two-column' do
+      panel 'Order Processing', namespace: :patron, priority: 1, width: '50%' do
         table do
           tr do
-            td do "Requests Awaiting Approval" end
-            td do link_to "#{Order.awaiting_approval.not_from_fine_arts.count}", patron_orders_path(:scope => 'awaiting_approval') end
+            td { 'Requests Awaiting Approval' }
+            td { link_to "#{Order.awaiting_approval.not_from_fine_arts.count}", patron_orders_path(scope: 'awaiting_approval') }
           end
           tr do
-            td do "Deferred Requests" end
-            td do link_to "#{Order.deferred.not_from_fine_arts.count}", patron_orders_path(:scope => 'deferred') end
+            td { 'Deferred Requests' }
+            td { link_to "#{Order.deferred.not_from_fine_arts.count}", patron_orders_path(scope: 'deferred') }
           end
           tr do
-            td do "Units Awaiting Copyright Approval" end
-            td do link_to "#{Unit.awaiting_copyright_approval.count}", patron_units_path(:scope => 'awaiting_copyright_approval') end
+            td { 'Units Awaiting Copyright Approval' }
+            td { link_to "#{Unit.awaiting_copyright_approval.count}", patron_units_path(scope: 'awaiting_copyright_approval') }
           end
           tr do
-            td do "Units Awaiting Condition Approval" end
-            td do link_to "#{Unit.awaiting_condition_approval.count}", patron_units_path(:scope => 'awaiting_condition_approval') end
+            td { 'Units Awaiting Condition Approval' }
+            td { link_to "#{Unit.awaiting_condition_approval.count}", patron_units_path(scope: 'awaiting_condition_approval') }
           end
         end
       end
     end
 
-    div :class => 'two-column' do
-      panel "Digitization Services Checkouts", :namespace => :patron, :priority => 2, :width => '50%' do
+    div class: 'two-column' do
+      panel 'Digitization Services Checkouts', namespace: :patron, priority: 2, width: '50%' do
         table do
           tr do
-            td do "Unreturned Material" end
-            td do link_to "#{Unit.overdue_materials.count}", patron_units_path(:scope => 'overdue_materials') end
+            td { 'Unreturned Material' }
+            td { link_to "#{Unit.overdue_materials.count}", patron_units_path(scope: 'overdue_materials') }
           end
           tr do
-            td do "Materials Currently in Digitization Services" end
-            td do link_to "#{Unit.checkedout_materials.count}", patron_units_path(:scope => 'checkedout_materials') end
+            td { 'Materials Currently in Digitization Services' }
+            td { link_to "#{Unit.checkedout_materials.count}", patron_units_path(scope: 'checkedout_materials') }
           end
         end
       end
     end
   end
-  
+
   # section "Requests Awaiting Approval (#{Order.awaiting_approval.count})", :namespace => :patron, :priority => 1, :width => '33%', :toggle => 'hide' do
   #   table_for Order.awaiting_approval do
   #     column :id do |order|

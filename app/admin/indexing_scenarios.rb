@@ -1,33 +1,33 @@
 ActiveAdmin.register IndexingScenario do
   config.sort_order = 'name_asc'
-  actions :all, :except => [:destroy]
-  
-  menu :parent => "Miscellaneous"
+  actions :all, except: [:destroy]
 
-  scope :all, :default => true
+  menu parent: 'Miscellaneous'
+
+  scope :all, default: true
 
   index do
     column :name
     column :pid
     column :datastream_name
     column :repository_url
-    column("Bibls") do |indexing_scenario|
-      link_to indexing_scenario.bibls.size, admin_bibls_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id}) 
+    column('Bibls') do |indexing_scenario|
+      link_to indexing_scenario.bibls.size, admin_bibls_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
     end
-    column("Components") do |indexing_scenario|
-      link_to indexing_scenario.components.size, admin_components_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+    column('Components') do |indexing_scenario|
+      link_to indexing_scenario.components.size, admin_components_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
     end
-    column("Master Files") do |indexing_scenario|
-      link_to indexing_scenario.master_files.size, admin_master_files_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+    column('Master Files') do |indexing_scenario|
+      link_to indexing_scenario.master_files.size, admin_master_files_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
     end
-    column("Units") do |indexing_scenario|
-      link_to indexing_scenario.units.size, admin_units_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+    column('Units') do |indexing_scenario|
+      link_to indexing_scenario.units.size, admin_units_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
     end
     default_actions
   end
 
-  show do 
-    panel "General Information" do
+  show do
+    panel 'General Information' do
       attributes_table_for indexing_scenario do
         row :name
         row :pid
@@ -39,21 +39,20 @@ ActiveAdmin.register IndexingScenario do
     end
   end
 
-  sidebar "Related Information", :only => [:show] do
+  sidebar 'Related Information', only: [:show] do
     attributes_table_for indexing_scenario do
-      row("Units") do |indexing_scenario|
-        link_to indexing_scenario.units.size, admin_units_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+      row('Units') do |indexing_scenario|
+        link_to indexing_scenario.units.size, admin_units_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
       end
-      row("Master Files") do |indexing_scenario|
-        link_to indexing_scenario.master_files.size, admin_master_files_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+      row('Master Files') do |indexing_scenario|
+        link_to indexing_scenario.master_files.size, admin_master_files_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
       end
-      row("Bibls") do |indexing_scenario|
-        link_to indexing_scenario.bibls.size, admin_bibls_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
+      row('Bibls') do |indexing_scenario|
+        link_to indexing_scenario.bibls.size, admin_bibls_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
       end
-      row("Components") do |indexing_scenario|
-        link_to indexing_scenario.components.size, admin_components_path(:q => {:indexing_scenario_id_eq => indexing_scenario.id})
-      end      
+      row('Components') do |indexing_scenario|
+        link_to indexing_scenario.components.size, admin_components_path(q: { indexing_scenario_id_eq: indexing_scenario.id })
+      end
     end
   end
-  
 end

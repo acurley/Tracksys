@@ -1,3 +1,2 @@
-ActiveAdmin.register MasterFile, :namespace => :transcription do
-
+ActiveAdmin.register MasterFile, namespace: :transcription do
 end

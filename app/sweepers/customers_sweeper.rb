@@ -1,12 +1,12 @@
 class CustomersSweeper < ActionController::Caching::Sweeper
   observe Customer
-  
+
   require 'activemessaging/processor'
   include ActiveMessaging::MessageSender
   include Rails.application.routes.url_helpers
 
-  EXPIRABLE_FIELDS = ['first_name', 'last_name']
-  ASSOCIATED_CLASSES = ['Order', 'Unit', 'MasterFile', 'Agency', 'Bibl']
+  EXPIRABLE_FIELDS = %w(first_name last_name)
+  ASSOCIATED_CLASSES = %w(Order Unit MasterFile Agency Bibl)
 
   # The after_update callback has a second expiry method for associated classes that is not required for
   # the destroy method since there should be no records associated with a destroyed record.
@@ -14,20 +14,20 @@ class CustomersSweeper < ActionController::Caching::Sweeper
     expire(customer)
     expire_associated(customer)
   end
-  
+
   def after_create(customer)
     expire(customer)
     expire_associated(customer)
   end
-  
+
   def after_destroy(customer)
     expire(customer)
   end
-  
+
   # Expire the index and show views for self
   def expire(customer)
-    Rails.cache.delete("views/tracksys.lib.virginia.edu" + "#{admin_customer_path(customer.id)}")
-    Rails.cache.delete("views/tracksys.lib.virginia.edu" + "#{admin_customers_path}")
+    Rails.cache.delete('views/tracksys.lib.virginia.edu' + "#{admin_customer_path(customer.id)}")
+    Rails.cache.delete('views/tracksys.lib.virginia.edu' + "#{admin_customers_path}")
   end
 
   # Since subordinate classes often display Customer information in their views, we need only to expire those cached views.
@@ -41,9 +41,9 @@ class CustomersSweeper < ActionController::Caching::Sweeper
     end
 
     if expirable
-      ASSOCIATED_CLASSES.each {|ac|
-        publish :purge_cache, ActiveSupport::JSON.encode( {:subject_class => customer.class.name, :subject_id => customer.id, :associated_class => "#{ac}" }) 
-      }
+      ASSOCIATED_CLASSES.each do|ac|
+        publish :purge_cache, ActiveSupport::JSON.encode(subject_class: customer.class.name, subject_id: customer.id, associated_class: "#{ac}")
+      end
     end
   end
 end

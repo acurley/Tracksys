@@ -1,35 +1,34 @@
 class CopyMetadataToMetadataDirectoryProcessor < ApplicationProcessor
-
-  subscribes_to :copy_metadata_to_metadata_directory, {:ack=>'client', 'activemq.prefetchSize' => 1}
+  subscribes_to :copy_metadata_to_metadata_directory, :ack => 'client', 'activemq.prefetchSize' => 1
 
   def on_message(message)
-    logger.debug "CopyMetadataToMetadataDirectoryProcessor received: " + message.to_s
+    logger.debug 'CopyMetadataToMetadataDirectoryProcessor received: ' + message.to_s
 
-    hash = ActiveSupport::JSON.decode(message).symbolize_keys 
-    
+    hash = ActiveSupport::JSON.decode(message).symbolize_keys
+
     # Validate incoming message
-    raise "Parameter 'unit_id' is required" if hash[:unit_id].blank?
-    raise "Parameter 'unit_path' is required" if hash[:unit_path].blank?
-       
-    @unit_id = hash[:unit_id]  
+    fail "Parameter 'unit_id' is required" if hash[:unit_id].blank?
+    fail "Parameter 'unit_path' is required" if hash[:unit_path].blank?
+
+    @unit_id = hash[:unit_id]
     @messagable_id = hash[:unit_id]
-    @messagable_type = "Unit"
+    @messagable_type = 'Unit'
     @workflow_type = AutomationMessage::WORKFLOW_TYPES_HASH.fetch(self.class.name.demodulize)
-    @unit_dir = "%09d" % @unit_id
+    @unit_dir = '%09d' % @unit_id
     @unit_path = hash[:unit_path]
-    @failure_messages = Array.new
+    @failure_messages = []
 
     # Get the contents of /digiserv-production/metadata and exclude directories that don't begin with and end with a number.  Hopefully this
     # will eliminate other directories that are of non-Tracksys managed content.
-    @metadata_dir_contents = Dir.entries(PRODUCTION_METADATA_DIR).delete_if {|x| x == '.' or x == '..' or not /^[0-9](.*)[0-9]$/ =~ x}
-    @metadata_dir_contents.each {|dir|
+    @metadata_dir_contents = Dir.entries(PRODUCTION_METADATA_DIR).delete_if { |x| x == '.' || x == '..' or not /^[0-9](.*)[0-9]$/ =~ x }
+    @metadata_dir_contents.each do|dir|
       @range = dir.split('-')
       if @unit_id.to_i.between?(@range.first.to_i, @range.last.to_i)
         @range_dir = dir
       end
-    }
-    
-    if not @range_dir
+    end
+
+    unless @range_dir
       on_error "No subdirectories of #{PRODUCTION_METADATA_DIR} appear to be suitable for #{@unit_id}.  Please create a directory in the format 'dddd-dddd' to house the metadata for this unit."
     end
 
@@ -43,15 +42,15 @@ class CopyMetadataToMetadataDirectoryProcessor < ApplicationProcessor
       FileUtils.mkdir_p(@destination_dir)
     end
 
-    @unit_dir_contents = Dir.entries(@unit_path).delete_if {|x| x == '.' or x == '..' or /.tif/ =~ x}
-    @unit_dir_contents.each {|content|
+    @unit_dir_contents = Dir.entries(@unit_path).delete_if { |x| x == '.' || x == '..' || /.tif/ =~ x }
+    @unit_dir_contents.each do|content|
       begin
         if File.directory?(File.join(@unit_path, content))
           if /Thumbnails/ =~ content
             FileUtils.cp_r(File.join(@unit_path, content), File.join(@destination_dir, content))
-          elsif content == ".AppleDouble"  # ignore .AppleDouble for now
+          elsif content == '.AppleDouble'  # ignore .AppleDouble for now
           else
-            @failure_messages << "Unknown directory in #{@unit_dir}" 
+            @failure_messages << "Unknown directory in #{@unit_dir}"
           end
         else
           FileUtils.cp(File.join(@unit_path, content), File.join(@destination_dir, content))
@@ -66,14 +65,14 @@ class CopyMetadataToMetadataDirectoryProcessor < ApplicationProcessor
        rescue Exception => e
          @failure_messages << "Can't copy source file '#{content}': #{e.message}"
       end
-    }
+    end
 
     if @failure_messages.empty?
       on_success "Unit #{@unit_id} metadata files have been successfully copied  to #{@destination_dir}."
     else
-      @failure_messages.each {|message|
+      @failure_messages.each do|message|
         on_failure "#{message}"
-      }
+      end
       on_error "There were failures copying files to #{PRODUCTION_METADATA_DIR}."
     end
   end

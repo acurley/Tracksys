@@ -1,6 +1,6 @@
 class UpgradeMasterFiles < ActiveRecord::Migration
   def change
-    change_table(:master_files, :bulk => true) do |t|
+    change_table(:master_files, bulk: true) do |t|
       t.remove_index :name_num
       t.rename :name_num, :title
       t.rename :staff_notes, :description
@@ -9,12 +9,12 @@ class UpgradeMasterFiles < ActiveRecord::Migration
       t.remove :file_id_ref
       t.remove :screen_preview
       t.integer :availability_policy_id
-      t.integer :automation_messages_count, :default => 0
+      t.integer :automation_messages_count, default: 0
       t.integer :use_right_id
       t.datetime :date_dl_ingest
       t.datetime :date_dl_update
-      t.remove_index :name => 'component_id'
-      t.remove_index :name => 'indexing_scenario_id'
+      t.remove_index name: 'component_id'
+      t.remove_index name: 'indexing_scenario_id'
       t.index :availability_policy_id
       t.index :component_id
       t.index :indexing_scenario_id

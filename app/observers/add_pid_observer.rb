@@ -5,7 +5,7 @@
 # Those PIDs are drawn from the Fedora repository and are acquired through the AssignPids module.
 #
 # PIDs should only be assigned after validation in order to prevent issuing an invalid (and possibly never created) object.
-class AddPidObserver < ActiveRecord::Observer 
+class AddPidObserver < ActiveRecord::Observer
   observe :bibl, :component, :master_file
 
   def before_save(record)

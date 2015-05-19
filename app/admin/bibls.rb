@@ -1,9 +1,9 @@
 ActiveAdmin.register Bibl do
-  menu :priority => 5
+  menu priority: 5
 
   actions :all
 
-  scope :all, :default => true
+  scope :all, default: true
   scope :approved
   scope :not_approved
   scope :in_digital_library
@@ -17,84 +17,84 @@ ActiveAdmin.register Bibl do
   filter :catalog_key
   filter :barcode
   filter :pid
-  filter :dpla, :as => :select
+  filter :dpla, as: :select
   filter :location
-  filter :index_destination, :as => :select
+  filter :index_destination, as: :select
   filter :cataloging_source
-  filter :resource_type, :as => :select, :collection => Bibl::RESOURCE_TYPES, :input_html => {:class => 'chzn-select'}
-  filter :availability_policy, :input_html => {:class => 'chzn-select'}
-  filter :customers_id, :as => :numeric
-  filter :orders_id, :as => :numeric
-  filter :agencies_id, :as => :numeric
-  
+  filter :resource_type, as: :select, collection: Bibl::RESOURCE_TYPES, input_html: { class: 'chzn-select' }
+  filter :availability_policy, input_html: { class: 'chzn-select' }
+  filter :customers_id, as: :numeric
+  filter :orders_id, as: :numeric
+  filter :agencies_id, as: :numeric
+
   csv do
     column :id
     column :title
     column :creator_name
     column :call_number
     column :location
-    column("# of Images") {|bibl| bibl.master_files.count}
-    column("In digital library?") {|bibl| format_boolean_as_yes_no(bibl.in_dl?)}
+    column('# of Images') { |bibl| bibl.master_files.count }
+    column('In digital library?') { |bibl| format_boolean_as_yes_no(bibl.in_dl?) }
   end
 
-  index :id => 'bibls' do
+  index id: 'bibls' do
     selectable_column
-    column :title, :sortable => :title do |bibl|
+    column :title, sortable: :title do |bibl|
       truncate_words(bibl.title, 25)
     end
     column :creator_name
     column :call_number
-    column :volume, :class => 'sortable_short'
-    column ("Source"), :class => 'sortable_short', :sortable => :cataloging_source do |bibl|
-    	bibl.cataloging_source
+    column :volume, class: 'sortable_short'
+    column ('Source'), class: 'sortable_short', sortable: :cataloging_source do |bibl|
+      bibl.cataloging_source
     end
-    column :catalog_key, :sortable => :catalog_key do |bibl|
+    column :catalog_key, sortable: :catalog_key do |bibl|
       div do
         bibl.catalog_key
       end
       if bibl.in_catalog?
         div do
-          link_to "VIRGO", bibl.physical_virgo_url, :target => "_blank"
+          link_to 'VIRGO', bibl.physical_virgo_url, target: '_blank'
         end
       end
     end
-    column :barcode, :class => 'sortable_short'
-    column :location, :class => 'sortable_short'
-    column ("Digital Library?") do |bibl|
+    column :barcode, class: 'sortable_short'
+    column :location, class: 'sortable_short'
+    column ('Digital Library?') do |bibl|
       div do
         format_boolean_as_yes_no(bibl.in_dl?)
       end
       if bibl.in_dl?
         div do
-          link_to "VIRGO", bibl.dl_virgo_url, :target => "_blank"
+          link_to 'VIRGO', bibl.dl_virgo_url, target: '_blank'
         end
         div do
-          link_to "Fedora", bibl.fedora_url, :target => "_blank"
+          link_to 'Fedora', bibl.fedora_url, target: '_blank'
         end
       end
     end
-    column ("DPLA?") do |bibl|
+    column ('DPLA?') do |bibl|
       format_boolean_as_yes_no(bibl.dpla)
     end
-    column :units, :class => 'sortable_short', :sortable => :units_count do |bibl|
-      link_to bibl.units.size, admin_units_path(:q => {:bibl_id_eq => bibl.id})
+    column :units, class: 'sortable_short', sortable: :units_count do |bibl|
+      link_to bibl.units.size, admin_units_path(q: { bibl_id_eq: bibl.id })
     end
-    column("Master Files") do |bibl|
-      link_to bibl.master_files.count, admin_master_files_path(:q => {:bibl_id_eq => bibl.id})
+    column('Master Files') do |bibl|
+      link_to bibl.master_files.count, admin_master_files_path(q: { bibl_id_eq: bibl.id })
     end
-    column("Links") do |bibl|
+    column('Links') do |bibl|
       div do
-        link_to "Details", resource_path(bibl), :class => "member_link view_link"
+        link_to 'Details', resource_path(bibl), class: 'member_link view_link'
       end
       div do
-        link_to I18n.t('active_admin.edit'), edit_resource_path(bibl), :class => "member_link edit_link"
+        link_to I18n.t('active_admin.edit'), edit_resource_path(bibl), class: 'member_link edit_link'
       end
     end
   end
-  
-  show :title => proc { |bibl| truncate(bibl.title, :length => 60) } do
-    div :class => 'three-column' do
-      panel "Basic Information", :toggle => 'show' do
+
+  show title: proc { |bibl| truncate(bibl.title, length: 60) } do
+    div class: 'three-column' do
+      panel 'Basic Information', toggle: 'show' do
         attributes_table_for bibl do
           row :catalog_key
           row :barcode
@@ -110,8 +110,8 @@ ActiveAdmin.register Bibl do
       end
     end
 
-    div :class => 'three-column' do
-      panel "Detailed Bibliographic Information", :toggle => 'show' do
+    div class: 'three-column' do
+      panel 'Detailed Bibliographic Information', toggle: 'show' do
         attributes_table_for bibl do
           row :cataloging_source
           row :citation
@@ -124,8 +124,8 @@ ActiveAdmin.register Bibl do
       end
     end
 
-    div :class => 'three-column' do
-      panel "Administrative Information", :toggle => 'show' do
+    div class: 'three-column' do
+      panel 'Administrative Information', toggle: 'show' do
         attributes_table_for bibl do
           row :is_approved do |bibl|
             format_boolean_as_yes_no(bibl.is_approved)
@@ -145,40 +145,40 @@ ActiveAdmin.register Bibl do
           row :genre do |bibl|
             bibl.genre.to_s.titleize
           end
-          row ("Date Created") do |bibl|
+          row ('Date Created') do |bibl|
             bibl.created_at
           end
-          row ("Date Updated from VIRGO") do |bibl|
+          row ('Date Updated from VIRGO') do |bibl|
             bibl.date_external_update
           end
         end
       end
     end
 
-    div :class => 'columns-none' do
-      panel "Digital Library Information", :toggle => 'hide' do
+    div class: 'columns-none' do
+      panel 'Digital Library Information', toggle: 'hide' do
         attributes_table_for bibl do
-          row ("In Digital Library?") do |bibl|
+          row ('In Digital Library?') do |bibl|
             format_boolean_as_yes_no(bibl.in_dl?)
           end
           row :pid
           row :date_dl_ingest
           row :date_dl_update
           row :exemplar do |bibl|
-            link_to "#{bibl.exemplar}", admin_master_files_path(:q => {:filename_eq => bibl.exemplar})
+            link_to "#{bibl.exemplar}", admin_master_files_path(q: { filename_eq: bibl.exemplar })
           end
-		  row :dpla
+          row :dpla
           row :availability_policy
           row :indexing_scenario
-          row :index_destination do |bibl| 
+          row :index_destination do |bibl|
             if bibl.index_destination
-              link_to "#{bibl.index_destination.nickname} (aka #{bibl.index_destination.url})", admin_index_destinations_path(:q => bibl.index_destination_id)
+              link_to "#{bibl.index_destination.nickname} (aka #{bibl.index_destination.url})", admin_index_destinations_path(q: bibl.index_destination_id)
             else
               nil
             end
           end
           row :use_right
-          row ("Discoverable?") do |bibl|
+          row ('Discoverable?') do |bibl|
             format_boolean_as_yes_no(bibl.discoverability)
           end
           row :desc_metadata
@@ -189,133 +189,133 @@ ActiveAdmin.register Bibl do
         end
       end
     end
-    
-    div :class => 'columns-none' do
+
+    div class: 'columns-none' do
       active_admin_comments
     end
   end
 
-  sidebar "Related Information", :only => [:show, :edit] do
+  sidebar 'Related Information', only: [:show, :edit] do
     attributes_table_for bibl do
-      row ("Catalog Record") do |bibl|
+      row ('Catalog Record') do |bibl|
         if bibl.in_catalog?
           div do
-            link_to "VIRGO (Physical Record)", bibl.physical_virgo_url, :target => "_blank"
+            link_to 'VIRGO (Physical Record)', bibl.physical_virgo_url, target: '_blank'
           end
         end
         if bibl.in_dl?
           div do
-            link_to "VIRGO (Digital Record)", bibl.dl_virgo_url, :target => "_blank"
+            link_to 'VIRGO (Digital Record)', bibl.dl_virgo_url, target: '_blank'
           end
         end
       end
-      row "Digital Library" do |bibl|
+      row 'Digital Library' do |bibl|
         if bibl.in_dl?
           div do
-            link_to "Fedora Object", bibl.fedora_url, :target => "_blank"
+            link_to 'Fedora Object', bibl.fedora_url, target: '_blank'
           end
           div do
-            link_to "Solr Record", bibl.solr_url, :target => "_blank"
+            link_to 'Solr Record', bibl.solr_url, target: '_blank'
           end
         end
       end
       row :master_files do |bibl|
-        link_to "#{bibl.master_files.count}", admin_master_files_path(:q => {:bibl_id_eq => bibl.id})
+        link_to "#{bibl.master_files.count}", admin_master_files_path(q: { bibl_id_eq: bibl.id })
       end
       row :units do |bibl|
-        link_to "#{bibl.units.size}", admin_units_path(:q => {:bibl_id_eq => bibl.id})
+        link_to "#{bibl.units.size}", admin_units_path(q: { bibl_id_eq: bibl.id })
       end
       row :orders do |bibl|
-        link_to "#{bibl.orders.count}", admin_orders_path(:q => {:bibls_id_eq => bibl.id})
+        link_to "#{bibl.orders.count}", admin_orders_path(q: { bibls_id_eq: bibl.id })
       end
       row :customers do |bibl|
-        link_to "#{bibl.customers.count}", admin_customers_path(:q => {:bibls_id_eq => bibl.id})
+        link_to "#{bibl.customers.count}", admin_customers_path(q: { bibls_id_eq: bibl.id })
       end
       row :automation_messages do |bibl|
-        link_to "#{bibl.automation_messages.size}", admin_automation_messages_path(:q => {:messagable_id_eq => bibl.id, :messagable_type_eq => "Bibl" })
+        link_to "#{bibl.automation_messages.size}", admin_automation_messages_path(q: { messagable_id_eq: bibl.id, messagable_type_eq: 'Bibl' })
       end
       row :components do |bibl|
-        link_to "#{bibl.components.count}", admin_components_path(:q => {:bibls_id_eq => bibl.id})
+        link_to "#{bibl.components.count}", admin_components_path(q: { bibls_id_eq: bibl.id })
       end
-      row "Agencies Requesting Resource" do |bibl|
-        bibl.agencies.uniq.sort_by(&:name).each {|agency|
-          div do 
+      row 'Agencies Requesting Resource' do |bibl|
+        bibl.agencies.uniq.sort_by(&:name).each do|agency|
+          div do
             link_to "#{agency.name}", admin_agency_path(agency)
           end
-        } unless bibl.agencies.empty?
+        end unless bibl.agencies.empty?
       end
-      row "Legacy Identifiers" do |bibl|
-        bibl.legacy_identifiers.each {|li|
+      row 'Legacy Identifiers' do |bibl|
+        bibl.legacy_identifiers.each do|li|
           div do
             link_to "#{li.description} (#{li.legacy_identifier})", admin_legacy_identifier_path(li)
           end
-        } unless bibl.legacy_identifiers.empty?
-      end      
-      row("Collection Bibliographic Record") do |bibl|
+        end unless bibl.legacy_identifiers.empty?
+      end
+      row('Collection Bibliographic Record') do |bibl|
         if bibl.parent_bibl
           link_to "#{bibl.parent_bibl.title}", admin_bibl_path(bibl.parent_bibl)
         end
       end
-      row "child bibls" do |bibl|
-      	link_to "#{bibl.child_bibls.size}", admin_bibls_path(:q => {:parent_bibl_id_eq => bibl.id } )
+      row 'child bibls' do |bibl|
+        link_to "#{bibl.child_bibls.size}", admin_bibls_path(q: { parent_bibl_id_eq: bibl.id })
       end
     end
   end
 
-  sidebar "Digital Library Workflow", :only => [:show] do
+  sidebar 'Digital Library Workflow', only: [:show] do
     if bibl.exists_in_repo? # actually in Fedora
-      div :class => 'workflow_button' do button_to "Update All XML Datastreams", update_metadata_admin_bibl_path(:datastream => 'allxml'), :method => :put end
-      div :class => 'workflow_button' do button_to "Update Dublin Core", update_metadata_admin_bibl_path(:datastream => 'dc_metadata'), :method => :put end
-      div :class => 'workflow_button' do button_to "Update Descriptive Metadata", update_metadata_admin_bibl_path(:datastream => 'desc_metadata'), :method => :put end
-      div :class => 'workflow_button' do button_to "Update Relationships", update_metadata_admin_bibl_path(:datastream => 'rels_ext'), :method => :put end
-      div :class => 'workflow_button' do button_to "Update Index Record", update_metadata_admin_bibl_path(:datastream => 'solr_doc'), :method => :put end
-    elsif bibl.in_dl? && ! bibl.exists_in_repo? # marked in db as in dl but not found in Fedora
-      div :class => 'workflow note' do "Item missing from repo." end
-      link_to "Go to the Units page to ingest.", admin_units_path(:q => {:bibl_id_eq => bibl.id})
+      div class: 'workflow_button' do button_to 'Update All XML Datastreams', update_metadata_admin_bibl_path(datastream: 'allxml'), method: :put end
+      div class: 'workflow_button' do button_to 'Update Dublin Core', update_metadata_admin_bibl_path(datastream: 'dc_metadata'), method: :put end
+      div class: 'workflow_button' do button_to 'Update Descriptive Metadata', update_metadata_admin_bibl_path(datastream: 'desc_metadata'), method: :put end
+      div class: 'workflow_button' do button_to 'Update Relationships', update_metadata_admin_bibl_path(datastream: 'rels_ext'), method: :put end
+      div class: 'workflow_button' do button_to 'Update Index Record', update_metadata_admin_bibl_path(datastream: 'solr_doc'), method: :put end
+    elsif bibl.in_dl? && !bibl.exists_in_repo? # marked in db as in dl but not found in Fedora
+      div class: 'workflow note' do 'Item missing from repo.' end
+      link_to 'Go to the Units page to ingest.', admin_units_path(q: { bibl_id_eq: bibl.id })
     else
-      "No options available.  Object not yet ingested."
+      'No options available.  Object not yet ingested.'
     end
   end
 
-  sidebar "Solr Index", :only => [:show] do
+  sidebar 'Solr Index', only: [:show] do
     if bibl.in_dl?
-      div :class => 'workflow_button' do button_to "Commit Records to Solr", update_all_solr_docs_admin_bibl_path, :user => StaffMember.find_by_computing_id(request.env['HTTP_REMOTE_USER'].to_s), :method => :get end
+      div class: 'workflow_button' do button_to 'Commit Records to Solr', update_all_solr_docs_admin_bibl_path, user: StaffMember.find_by_computing_id(request.env['HTTP_REMOTE_USER'].to_s), method: :get end
     end
   end
 
-  form :partial => "form"
+  form partial: 'form'
 
   collection_action :external_lookup
 
-  member_action :update_metadata, :method => :put do 
+  member_action :update_metadata, method: :put do
     Bibl.find(params[:id]).update_metadata(params[:datastream])
-    redirect_to :back, :notice => "#{params[:datastream]} is being updated."
+    redirect_to :back, notice: "#{params[:datastream]} is being updated."
   end
 
   member_action :update_all_solr_docs do
-    message = ActiveSupport::JSON.encode( {:message => 'go'})
+    message = ActiveSupport::JSON.encode(message: 'go')
     publish :send_commit_to_solr, message
     flash[:notice] = "All Solr records have been committed to #{STAGING_SOLR_URL}."
     redirect_to :back
   end
-  
+
   collection_action :create_dl_manifest do
-    message = ActiveSupport::JSON.encode( {:computing_id => "#{request.env['HTTP_REMOTE_USER'].to_s}"} )
-    publish :create_dl_manifest, message    
-    redirect_to :back, :notice => "Digital library manifest creation started.  Check your email in a few minutes."
+    message = ActiveSupport::JSON.encode(computing_id: "#{request.env['HTTP_REMOTE_USER']}")
+    publish :create_dl_manifest, message
+    redirect_to :back, notice: 'Digital library manifest creation started.  Check your email in a few minutes.'
   end
 
-  action_item :only => [:edit, :new] do
-    link_to "Get Metadata From VIRGO", external_lookup_admin_bibls_path, :class => 'bibl_update_button', :method => :get, :remote => true
+  action_item only: [:edit, :new] do
+    link_to 'Get Metadata From VIRGO', external_lookup_admin_bibls_path, class: 'bibl_update_button', method: :get, remote: true
   end
 
   controller do
     require 'activemessaging/processor'
-    include ActiveMessaging::MessageSender    
+    include ActiveMessaging::MessageSender
 
-    # Only cache the index view if it is the base index_url (i.e. /bibls) and is devoid of either params[:page] or params[:q].  
+    # Only cache the index view if it is the base index_url (i.e. /bibls) and is devoid of either params[:page] or params[:q].
     # The absence of these params values ensures it is the base url.
-    caches_action :index, :unless => Proc.new { |c| c.params.include?(:page) || c.params.include?(:q) }
+    caches_action :index, unless: proc { |c| c.params.include?(:page) || c.params.include?(:q) }
     caches_action :show
     cache_sweeper :bibls_sweeper
 
@@ -338,9 +338,9 @@ ActiveAdmin.register Bibl do
         # clicks the Update button in the GUI.)
         @bibl = Virgo.external_lookup(params[:catalog_key], params[:barcode])
       end
-     
+
       respond_to do |format|
-        format.js 
+        format.js
       end
     end
   end

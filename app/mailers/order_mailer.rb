@@ -1,15 +1,15 @@
 class OrderMailer < ActionMailer::Base
   add_template_helper(ApplicationHelper)
-  default from: "digitalservices@virginia.edu", 
-          cc: "digitalservices@virginia.edu",
-          bcc: "sdm7g@virginia.edu",
-          reply_to: "digitalservices@virginia.edu"
+  default from: 'digitalservices@virginia.edu',
+          cc: 'digitalservices@virginia.edu',
+          bcc: 'sdm7g@virginia.edu',
+          reply_to: 'digitalservices@virginia.edu'
 
   def send_fee_estimate(order)
     @order = order
     @customer = order.customer
-    
-    if Rails.env == "development" || Rails.env == "test"
+
+    if Rails.env == 'development' || Rails.env == 'test'
       address = 'sdm7g@virginia.edu'
     else
       address = @customer.email
@@ -23,17 +23,15 @@ class OrderMailer < ActionMailer::Base
     @customer = order.customer
     @dvd_delivery_location = dvd_delivery_location
 
-    if Rails.env == "development" || Rails.env == "test"
+    if Rails.env == 'development' || Rails.env == 'test'
       address = 'sdm7g@virginia.edu'
     else
       address = @customer.email
     end
 
     # Pass fees to email if there is a fee and it is not equal to $0.00
-    if order.fee_estimated and order.fee_actual
-      if not order.fee_actual.to_i.eql?(0)
-        @fee = order.fee_actual
-      end
+    if order.fee_estimated && order.fee_actual
+      @fee = order.fee_actual unless order.fee_actual.to_i.eql?(0)
     end
 
     mail to: address, subject: "UVA Digitization Services - Order #{order.id} Complete"
@@ -43,31 +41,29 @@ class OrderMailer < ActionMailer::Base
     @request = request
     @customer = request.customer
 
-    if Rails.env == "development" || Rails.env == "test"
+    if Rails.env == 'development' || Rails.env == 'test'
       address = 'sdm7g@virginia.edu'
     else
       address = @customer.email
     end
 
-    mail to: address, subject: "UVA Digitization Services - Request ##{@request.id} Confirmation", :css => :email
+    mail to: address, subject: "UVA Digitization Services - Request ##{@request.id} Confirmation", css: :email
   end
-  
+
   def web_delivery(order, delivery_files)
     @order = order
     @customer = order.customer
     @delivery_files = delivery_files
 
-    if Rails.env == "development" || Rails.env == "test"
+    if Rails.env == 'development' || Rails.env == 'test'
       address = 'sdm7g@virginia.edu'
     else
       address = @customer.email
     end
 
     # Pass fees to email if there is a fee and it is not equal to $0.00
-    if order.fee_estimated and order.fee_actual
-      if not order.fee_actual.to_i.eql?(0)
-        @fee = order.fee_actual
-      end
+    if order.fee_estimated && order.fee_actual
+      @fee = order.fee_actual unless order.fee_actual.to_i.eql?(0)
     end
 
     mail to: address, subject: "UVA Digitization Services - Order # #{order.id} Complete"

@@ -1,5 +1,5 @@
 Tracksys::Application.routes.draw do
-  root :to => 'requests#index'
+  root to: 'requests#index'
 
   match '/request' => redirect('/')
 

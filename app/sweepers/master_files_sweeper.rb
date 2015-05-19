@@ -3,10 +3,10 @@ class MasterFilesSweeper < ActionController::Caching::Sweeper
 
   require 'activemessaging/processor'
   include ActiveMessaging::MessageSender
-  include Rails.application.routes.url_helpers 
+  include Rails.application.routes.url_helpers
 
-  EXPIRABLE_FIELDS = ['unit_id', 'component_id', 'filename', 'title', 'description', 'pid', 'date_archived', 'date_dl_ingest']
-  ASSOCIATED_CLASSES = ['Customer', 'Order', 'Unit', 'Agency', 'Bibl', 'Component']
+  EXPIRABLE_FIELDS = %w(unit_id component_id filename title description pid date_archived date_dl_ingest)
+  ASSOCIATED_CLASSES = %w(Customer Order Unit Agency Bibl Component)
 
   # The after_update callback has a second expiry method for associated classes that is not required for
   # the destroy method since there should be no records associated with a destroyed record.
@@ -14,26 +14,26 @@ class MasterFilesSweeper < ActionController::Caching::Sweeper
     expire(master_file)
     expire_associated(master_file)
   end
-  
+
   def after_create(master_file)
     expire(master_file)
     expire_associated(master_file)
   end
-  
+
   def after_destroy(master_file)
     expire(master_file)
   end
-  
+
   # Expire the index and show views for self
   def expire(master_file)
-    Rails.cache.delete("views/tracksys.lib.virginia.edu" + "#{admin_master_file_path(master_file.id)}")
-    Rails.cache.delete("views/tracksys.lib.virginia.edu" + "#{admin_master_files_path}")
+    Rails.cache.delete('views/tracksys.lib.virginia.edu' + "#{admin_master_file_path(master_file.id)}")
+    Rails.cache.delete('views/tracksys.lib.virginia.edu' + "#{admin_master_files_path}")
   end
 
   # Since subordinate classes often display MasterFile information in their views, we need only to expire those cached views.
   # The classes which display Customer information on their show views are: Customers, Units, Orders, Bibls, and Components.
   #
-  # Subordinate classes will only be expired if either :unit_id, :component_id, :filename, :title, :description, :pid, :date_archived: 
+  # Subordinate classes will only be expired if either :unit_id, :component_id, :filename, :title, :description, :pid, :date_archived:
   # or :date_dl_ingest are changed.  Other values should not change the show views of subordinate clases.
   def expire_associated(master_file)
     Rails.logger.debug "MasterFilesSweeper: expire_associated will update #{master_file.class} #{master_file.id}'s expireable fields #{EXPIRABLE_FIELDS}"
@@ -44,12 +44,11 @@ class MasterFilesSweeper < ActionController::Caching::Sweeper
     end
 
     if expirable
-      ASSOCIATED_CLASSES.each {|ac|
-        msg = ActiveSupport::JSON.encode( {:subject_class => master_file.class.name, :subject_id => master_file.id, :associated_class => "#{ac}" })
+      ASSOCIATED_CLASSES.each do|ac|
+        msg = ActiveSupport::JSON.encode(subject_class: master_file.class.name, subject_id: master_file.id, associated_class: "#{ac}")
         Rails.logger.debug "publishing to :purge_cache #{msg}"
         publish :purge_cache, msg
-      }
+      end
     end
-
   end
 end

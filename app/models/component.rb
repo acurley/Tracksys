@@ -131,7 +131,7 @@ class Component < ActiveRecord::Base
   end
 
   def new_previous
-    Component.where(followed_by_id: id).first
+    Component.find_by(followed_by_id: id)
   end
 
   def next

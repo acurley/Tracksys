@@ -1,7 +1,6 @@
 include TweetButton
 
 module ApplicationHelper
-
   # If input is empty string or nil, returns string "&nbsp;".
   # Otherwise, cleans input using html_escape and returns resulting
   # string.
@@ -38,27 +37,21 @@ module ApplicationHelper
   end
 
   def format_date(date)
-    begin
-      return date.strftime("%m / %d / %Y")
-    rescue Exception => e
-      return nil
-    end
+    return date.strftime('%m / %d / %Y')
+  rescue Exception => e
+    return nil
   end
 
   def format_datetime(datetime)
-    begin
-      return datetime.strftime("%m / %d / %Y %l:%M:%S %P")
-    rescue Exception => e
-      return nil
-    end
+    return datetime.strftime('%m / %d / %Y %l:%M:%S %P')
+  rescue Exception => e
+    return nil
   end
 
   def format_email_in_sidebar(email)
-    begin
-      return email.gsub(/(@)/, "@\r").delete(' ')
-    rescue Exception => e
-      return nil
-    end
+    return email.gsub(/(@)/, "@\r").delete(' ')
+  rescue Exception => e
+    return nil
   end
 
   # Truncates input string (to number of words specified, using word
@@ -67,12 +60,12 @@ module ApplicationHelper
     if text.nil?
       return ''
     else
-      words = text.split()
-      return words[0..(length-1)].join(' ') + (words.length > length ? end_string : '')
+      words = text.split
+      return words[0..(length - 1)].join(' ') + (words.length > length ? end_string : '')
     end
   end
 
-  # Since Kaminari needs a "pagination object" to operate on, it is essential to turn a single 
+  # Since Kaminari needs a "pagination object" to operate on, it is essential to turn a single
   # object into an Array that Kaminari can use.
   # def pagify(object)
   #   return Kaminari.paginate_array(Array[object])
@@ -80,11 +73,11 @@ module ApplicationHelper
 
   # Utility method for cleaning up xml fragments
   def tidy(str)
-    raise ArgumentError unless str.is_a?(String)
-	  xml=Nokogiri::XML(str)
-    raise ArgumentError unless xml.is_a?(Nokogiri::XML::Document)
-	  temp_str = xml.human
-	  xml2=Nokogiri::XML(temp_str)
-	  return xml2.root.to_s
+    fail ArgumentError unless str.is_a?(String)
+    xml = Nokogiri::XML(str)
+    fail ArgumentError unless xml.is_a?(Nokogiri::XML::Document)
+    temp_str = xml.human
+    xml2 = Nokogiri::XML(temp_str)
+    xml2.root.to_s
   end
 end
